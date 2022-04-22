@@ -1,22 +1,27 @@
 %% calc_SS_stability.m
-% Use this to calculate stability of 'GUASE'-type or 'CAlpha' type
-% generalized Lotka Volterra Equations
 % [StableStates,SSval,eigval] = calc_SS_stability(num_sp,params,S,Jmat,Type)
+%
+% Use this to calculate stability of 'GUASE'-type, 'CAlpha', 'Ralpha' type
+% generalized Lotka Volterra Equations
+%
 % Input:
-% num_sp = numbers of species
-% params = parameter set (growth rates, carrying capacity, interaction
-%   terms)
-% S = steady-state solutions calculated by symbolic_solns.m
-% Jmat = Jacobian from symbolic solns.m
-% Type = 'GAUSE' or 'CAlpha' dependence on type of gLV formulation
+%   * num_sp = numbers of species
+%   * params = parameter set (growth rates, carrying capacity, interaction
+%       terms)
+%   * S = steady-state solutions calculated by symbolic_solns.m
+%   * Jmat = Jacobian from symbolic solns.m
+%   * Type = 'GAUSE' or 'CAlpha' dependence on type of gLV formulation
 %
 % Output: 
-% StableStates = all biologically relevant steady states
-% SSval = all steady states (unstable and negative)
-% eival = eigen values for each steady-state
+%   * StableStates = all biologically relevant steady states
+%   * SSval = all steady states (unstable and negative)
+%   * eival = eigen values for each steady-state
 %
-% Questions can be directed at Christina Lee (chyylee@umich.edu)
-% 2/19/2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Feb 19, 2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type)
      N = num_sp;
 

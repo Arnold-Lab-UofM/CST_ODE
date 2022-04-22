@@ -1,4 +1,8 @@
 %% change_abundance.m
+% [tpre,ypre,tpost,ypost] = change_abundance(base_params,y0,sp_p,ep_p,sp_idx,sp_amt)
+%
+% Generates a simulation of changing the abundance of a species in the
+% model (like adding a probiotic).
 %
 % NON-GUI RUN:
 % [tpre,ypre,tpost,ypost] = change_abundance(base_params,y0,sp_p,ep_p,sp_idx,sp_amt)
@@ -18,6 +22,11 @@
 % sp_amt - amount of species to add
 %
 % OUTPUT: trajectory info
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Jan 12, 2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function [tpre,ypre,tpost,ypost] = change_abundance(base_params,y0,sp_p,ep_p,sp_idx,sp_amt)
 

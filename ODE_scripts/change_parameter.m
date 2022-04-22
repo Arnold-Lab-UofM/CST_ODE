@@ -1,4 +1,7 @@
 %% change_parameter.m
+% [tplot,yplot,newP,pidx] = change_parameter(base_params,y0,sp_p,ep_p,pidx,new_val,returnNorm,plotRel,perChange)
+%
+% Completes a simulation with a change in a parameter.
 %
 % NON-GUI PROMPT:
 % [tplot,yplot,newP,pidx] = change_parameter(base_params,y0,sp_p,ep_p,pidx,new_val,returnNorm)
@@ -22,6 +25,11 @@
 %
 % yplot can be converted to relative abundances and used as 'run_mat' for
 % converting to SS_type using bin_to_SS.m
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Jan 12, 2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function [tplot,yplot,newP,pidx] = change_parameter(base_params,y0,sp_p,ep_p,pidx,new_val,returnNorm,plotRel,perChange)
     

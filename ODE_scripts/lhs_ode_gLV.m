@@ -1,7 +1,9 @@
 %% lhs_probiotic_ode_gLV.m
-% ODE file that is compatible with the Kirschner group GSUA.
+% ODE file that is compatible with the Kirschner group Global Sensitivity 
+% Analysis Code.
 %
-% Example: 3 Species
+% The manuscript code is a three species model, but this function could
+% generalize to any number of species.
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee

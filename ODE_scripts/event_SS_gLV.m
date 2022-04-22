@@ -6,9 +6,9 @@
 % May need to modify the slope_threshold depending how close to steady
 % state you want the model to terminate at 
 
-function [x, isterm, dir] = event_SS_probiotic_gLV(t,y,params)
+function [x, isterm, dir] = event_SS_gLV(t,y,params)
 % Supply the differential equations
-dy = lhs_probiotic_ode_gLV(t,y,params);
+dy = lhs_ode_gLV(t,y,params);
 
 % Determines when the derivative of the solution is close to zero (steady
 % state)

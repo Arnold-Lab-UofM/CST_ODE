@@ -1,6 +1,6 @@
 %% [SS_map,data_out,sum_table] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
 %
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % INPUT:
 %   * num_sp: number of species (3)
 %   * base_params: model parameters to start the simulations
@@ -16,7 +16,11 @@
 %   * SS_map: steady states indicator for each combination
 %   * data_out: predicted abundances for the steady states
 %   * sum_table: summary of steady states reached
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Jan 12, 2020
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
     
     if nargin <= 8

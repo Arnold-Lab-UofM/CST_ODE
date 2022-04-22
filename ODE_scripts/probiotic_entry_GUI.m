@@ -1,7 +1,7 @@
 %% probiotic_entry_GUI.m
-
+% [flnm,sp_type] = probiotic_entry_GUI()
 % Easier propogation of LHS parameter information.
-
+%
 % GUI will ask for inputs for number of species in the system and how many
 % species total are in the system. The last LB species is automatically
 % considered the "Probiotic". Likewise could also be considered a "Pathogen
@@ -13,14 +13,14 @@
 %   3) Interaction term ranges assume same probability distributions for
 %       these classes of interactions (BV on BV, BV on LB, BV on P, LB on BV,
 %       LB on LB, LB on P, P on BV, P on LB, P on P)
-
+%
 % Future updates will allow for modifications of subsets of these groups,
 % but for now, if you want to edit subpopulations of BV or LB species, it
 % can be completed within the excel file manually.
-
+%
 % Output: The name of the excel spreadsheet generated (flnm) and the type
 % of species in the system as a vector (sp_type).
-
+%
 % INSTRUCTIONS: Generate input needed for the lhs_ode_settings_GUI or
 % lhs_ode_settings_fromxlsx file.
 

@@ -1,6 +1,9 @@
 %% get_SS_info_3sp.m
 % [poss_SS, mat, poss_SSnames, mat_names,mat_num] = get_SS_info(SS_vector,plotFlag)
 %
+% GOAL: Assess the stability of each input parameter set and list if
+%   multiple states are stable ("steady state configurations").
+%
 % INPUTS:
 %   * SS_vector: cell vector of stable steady states for multiple parameter 
 %       sets

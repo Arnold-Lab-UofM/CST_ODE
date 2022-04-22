@@ -1,17 +1,20 @@
 %% symbolic_solns.m
+% [S, Jmat] = symbolic_solns(num_sp,Type)
+%
 % Use this to calculate steady states and jacobian of 'GUASE'-type or 'CAlpha' type
 % generalized Lotka Volterra Equations
 % [S, Jmat] = symbolic_solns(num_sp,Type)
 % Input:
-% num_sp = numbers of species
-% Type = 'GAUSE' or 'CAlpha' dependence on type of gLV formulation
+%   * num_sp = numbers of species
+%   * Type = 'GAUSE', 'calpha' or 'ralpha' dependence on type of gLV formulation
+%       - Gause assumes carrying capacities and beta coefficients
+%       - C-alpha: a factorized version of Gause 
+%       - R-alpha: is the regular or tradition version of LV, generalized
+%           Lotka-Volterra [used in manuscript]
 %
 % Output: 
-% S = calculated steady-states
-% Jmat = calculated Jacobian
-%
-% Questions can be directed at Christina Lee (chyylee@umich.edu)
-% 2/19/2021   
+%   * S = calculated steady-states
+%   * Jmat = calculated Jacobian
 %
 % Other Info
 % 2) GENERATE EQUATIONS TOT SOLVE FOR SS
@@ -21,6 +24,11 @@
 % 3) CALCULATE JACOBIAN TO DETERMINE STABILITY
 % Apply linear stability analysis to determine the behavior around the
 % equilibrium points. To do this, we need to now determine the Jacobian.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Feb 19, 2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function [S, Jmat] = symbolic_solns(num_sp,Type)
     N = num_sp; % enter number of species in the model, here we want 3
@@ -88,7 +96,7 @@ function [S, Jmat] = symbolic_solns(num_sp,Type)
 
         Jmat = jacobian(eqns,[st_var]); % analytical jacobian
         
-    elseif contains(lower(Type),'ralpha')
+    elseif contains(lower(Type),'ralpha') % THIS IS THE GLV VERSION
         st_var = sym('y',[1 N]); % define state variables (the species)
         g_var = sym('M',[1 N]); % define growth rates (on per species)
         B_var = transpose(sym('B',[N N])); % define interaction coefficients (species x species matrix)

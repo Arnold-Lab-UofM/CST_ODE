@@ -32,7 +32,7 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
 
     for val_id = 1:size(all_run_mat,1)
 
-        disp(['Plotting .... ', num2str(val_id)])
+        disp(['Combination #', num2str(val_id)])
 
         % Core parameter information
 
@@ -49,7 +49,6 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
         disp(['Plotting run: '])
         for net_id = 1:NN
 
-%             disp(['Plotting run: ', num2str(net_id)])
             fprintf('%d ', net_id);
 
             % Extract run information for given parameter set
@@ -63,7 +62,6 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
             p = plot(tplot,yplot_rel,'LineWidth',1.5);
             hold on
             
-%             sizN = size(BV,1);
             sizP = size(tplot,1);
             BV(1:sizP,net_id) = yplot(:,1);
             LI(1:sizP,net_id) = yplot(:,2);

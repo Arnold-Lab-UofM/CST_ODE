@@ -1,12 +1,22 @@
 %% generate_input_combos.m
+% [newValueMat] = generate_input_combos(vectorCell)
 %
-% INPUT an Mx1 Cell of inputs
+% Generates matrix of all possible combinations of parameter alterations to
+% use in simulate_LHS_response_men.m
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% INPUT: an Mx1 Cell of inputs
 % Ex: vectorCell = {[0.18 0.15 0.125 0.1], [-0.05 -0.04 -0.02]};
 %
 % OUTPUT: Matrix of all parameter value combinations
 %
 % NOTE: Must be in order in which parameters are listed in model.
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Jan 12, 2020
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 function [newValueMat] = generate_input_combos(vectorCell)
     
     M = length(vectorCell);

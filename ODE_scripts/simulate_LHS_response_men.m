@@ -1,4 +1,8 @@
 %% simulate_LHS_response_men.m
+% simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
+%
+% GOAL: Run perturbation simulations across LHS generate parameter sets and
+%   different combinations of parameter perturbations.
 %
 % REQUIRES: LHS_trace_analysis.m, generate_input_combos.m, and the parallel
 % computing toolbox.
@@ -23,7 +27,11 @@
 % Includes workspace, summary figure of the runs, and if plotTraj is true, 
 % all the trajectories for each parameter combination in the NewValueMat.
 %
-% Christina Y. Lee (May 20, 2021)
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% May 21, 2021
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
  

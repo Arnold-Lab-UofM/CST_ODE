@@ -1,11 +1,18 @@
 %% Fig1_run_global_SA.m
 %
-% Generates workspace for downstream analysis.This can be completed in
-% two parts:
+% Generates workspace for downstream analysis. This can be completed in
+% three parts:
 %   (1) Run the LHS-PRCC code
 %           - Input: xlsx file
-%           - Output: workspace
+%           - Output: Model_LHS workspace
 %   (2) Calculate SS stability using local stability analysis
+%           - Input: Model_LHS workspace
+%           - Output: SSConfig workspace
+%                       + Figure of Model SS frequency
+%   (3) Relate Model SS to CST Equilibrium Behavior (EB)
+%           - Input SSConfig workspace
+%           - Output: SSConfig workspace w/ CST EB appended
+%                       + Figure of CST EB frequency
 %
 % REQUIRES:
 %   * Kirschner Lab Global Sensitivity Analysis Folder
@@ -18,6 +25,8 @@
 %       is the Jacobian of the system of ODEs, "Type" which is the
 %       formulation of ODEs (all of these values are in the
 %       analytical-base.mat workspace)
+%   * analyze_Global_CST_SS.m
+%
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
@@ -33,15 +42,22 @@
 % @lhs_ode_gLV (ODE script/formulation used here)
 lhs_ode_run_new('lhs_ode_settings_GUI')
 
-%% 2. Get Predicted Steady-States
-% 'Model_LHS_5000.mat' is the output generate from section #1 in our
+%% 2. Get Predicted Model Steady-States
+% 'Model_LHS.mat' is the output generate from section #1 in our
 %   (LHS code is stochastic, will not always generate exact same parameter
 %   sets)
 
-fdr_loc = '../workspaces'; % folder location
-lhs_nm = 'Model_LHS_5000.mat'; % load worspace generated in #1
-analyze_Global_SS(strcat(fdr_loc,'/',lhs_nm)) % Call function that determines SS configurations
+fdr_loc = ''; % folder location
+lhs_nm = 'Model_LHS.mat'; % load Model_LHS workspace in #1 
+analyze_Global_SS(strcat(fdr_loc,lhs_nm),false) % Call function that determines SS configurations
 
+%% 3. Get CST Equilibrium Behavior
+% To relate model SS to clinical behavior, a nearest centroid classifier
+% bins each model SS to a CST from centroid published in France et al.,
+% 2020 (VALENCIA)
+
+fn = 'SSConfig-Analysis-Model_LHS.mat';
+analyze_Global_CST_SS(fn)
 
 
 

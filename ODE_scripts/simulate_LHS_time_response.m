@@ -1,8 +1,4 @@
-%% simulate_LHS_response_men.m
-% simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
-%
-% GOAL: Run perturbation simulations across LHS generate parameter sets and
-%   different combinations of parameter perturbations.
+%% simulate_LHS_response.m
 %
 % REQUIRES: LHS_trace_analysis.m, generate_input_combos.m, and the parallel
 % computing toolbox.
@@ -27,31 +23,39 @@
 % Includes workspace, summary figure of the runs, and if plotTraj is true, 
 % all the trajectories for each parameter combination in the NewValueMat.
 %
-%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% Christina Y. Lee
-% University of Michigan
-% May 21, 2021
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee (May 20, 2021)
 
-function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
+function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSmat,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
  
     
-    %% 1) Parameter information
+    %pat_nm = strcat('UA',extractBetween(ws_nm,'UA','_'));
     [~, mat, ~, mat_names,~] = get_SS_info_3sp(StbleSS,true);
     close
     sp_names = {'BV','LI','oLB'};
+%     sp_names = {'oLB','LI','BV'}; % order is different for clinical samples
     [nm_out1] = generate_parameter_names(sp_names);
     [nm_out2] = generate_coeff_labels('\alpha',sp_names);
     param_names = horzcat(nm_out1{1:length(sp_names)},nm_out2);
 
+    %% 2) PULL SS CONFIGURATION OF INTEREST
+%     mat_names_tmp = horzcat(mat_names,{'2SS Types'},{'1SS Types'});
+%     [ss_id,~] = listdlg('ListString',mat_names_tmp); % Drop down menu of SS Configs
+
+
+    %[ss_id,~] = listdlg('ListString',mat_names); % Drop down menu of SS Configs
     
+%     ss_id = 1:20; % force it to select all configurations
+%     sel_nets = LHSmat(sum(mat(:,ss_id),2)==1,:);
+    sel_nets = LHSmat;
+    
+
     % Print the number of associated parameter sets
     disp('/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\')
     disp(['[',ss_type, '] has ', num2str(size(sel_nets,1)), ...
         ' parameter sets'])
     disp('\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/')
 
-    %% 2. CREATE INPUT VALUE MATRIX FOR MODIFICATIONS
+    %% 3) CREATE INPUT VALUE MATRIX FOR MODIFICATIONS
     
     if nargin < 8
         % Prompts user to select parameters to modify
@@ -74,6 +78,10 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
 
     [newValueMat] = generate_input_combos(vectorCell);
 
+    % COSTUMIZE SIMULATION DETAILS
+    % ###### MODIFY HERE ######
+%     [spidx,~] = listdlg('PromptString', {'Select starting dominant species'},...
+%         'ListString',sp_names); % Pick starting state
 
     % Current "Defaults" - may change
     if nargin < 2
@@ -83,24 +91,39 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
         plotTraj = true; % Generate individual plots (can take a long time to run)
     end
 
+    % Less likely to be changed
+%     ybase = [0.01 0.01 0.01]; % make sure max value is your initial state of interest
+%     ybase(1) = 0.8; % From prompt, make base species your max value - FORCED BV
     returnNorm = true; % type of parameter change (temporary or permanent)
     plotRel = 3; % close plots during simulation
     run_nets = sel_nets; % Input networks 
 
+    % ###### END MODIFY #######
+
     % Display run information
     disp(['Altering SS Config. ', ss_type ,' run info: '])
     disp([param_names(pidx)])
+    %disp(['Starting State: ', sp_names{ybase == max(ybase)}])
     disp(['Duration of Alteration: ', num2str(ep_p - sp_p), 'hrs'])
     disp(['No. Parameter Sets: ',num2str(size(run_nets,1))])
     disp(['No. Parameter Combos: ', num2str(size(newValueMat,1))])
     disp('Input parameter values:')
-    
+    %disp(answ)
+    % disp(['CHECK vectorCell INPUT IS IN SAME ORDER AS PARAMETERS LISTED'])
+
     % Asker User to Confirm Run Details Before Proceeding
-    str = input('Confirm Run: (Y/N)?','s');
+%     str = input('Confirm Run: (Y/N)?','s');
+    str = 'Y';
 
     %5) START OF CODE NOT NEEDED TO BE MODIFIED
     if upper(str) == 'Y'
         tic
+        % Create a directory to save output
+%         if length(ss_id) >  4
+%             cnm = ss_type{1};
+%         else 
+%             cnm = strrep(mat_names{ss_id},' ', '');
+%         end
         pnm = strcat(param_names{[pidx]});
         pnmD = regexprep(pnm,{'{','}','\','>'},{'','','',''});
         dirName = strcat(ss_type,'_',num2str(length(pidx)),'D_',pnmD,'_',date);
@@ -108,10 +131,10 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
             mkdir(dirName)
         else
             disp('WARNING: directory already exist - please modify name')
-            newNm = inputdlg({'Enter New Name:'},'Input', [1 50], ...
-                {dirName});
-            dirName = newNm{1};
-            mkdir(dirName)
+%             newNm = inputdlg({'Enter New Name:'},'Input', [1 50], ...
+%                 {dirName});
+%             dirName = newNm{1};
+%             mkdir(dirName)
         end
 
        
@@ -128,7 +151,7 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
         NL = size(run_nets,1);
 
         % LOOP THRU ALL VALUES IN THE NEW VALUE MATRIX
-        parfor val_id = 1:size(newValueMat,1)
+        for val_id = 1:size(newValueMat,1)
             new_val = newValueMat(val_id,:);
             runType = cell(NL,1);
             runFlag = NaN(NL,1);
@@ -137,7 +160,7 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
             maxChangeFlag = NaN(NL,1);
 
             % LOOP THROUGH ALL INPUT PARAMETER SETS
-            for net_id = 1:NL
+            parfor net_id = 1:NL
                 base_params = run_nets(net_id,:);
 
                 % Determine base SS
@@ -146,7 +169,7 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
                 y0 = ybase*sum(OGSS(1,:)); % Set initial conditions based on input
 
                 % START PLOTTING ALL TRAJECTORIES FOR GIVEN SET
-                [tplot,yplot,newP,~] = change_parameter_men(base_params,y0,sp_p,ep_p,time_post,...
+                [tplot,yplot,newP,~] = change_parameter_fxadd(base_params,y0,sp_p,ep_p,time_post,...
                     pidx,new_val,returnNorm,plotRel,perChange);
                 title(['#',num2str(val_id), ': ',num2str(new_val)])
                 run_mat = yplot;
@@ -189,10 +212,9 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
 
             % DISPLAY RESULTS
             disp(['######## RUN: ', num2str(val_id), ' - ', num2str(new_val), ' ########'])
-            disp(["Results at time: ", num2str(time_post), "Days after perturbation"])
             disp([num2str(numPERM), ' of ', num2str(length(runFlag)),...
                 '(',num2str(round(numPERM/length(runFlag)*100,2)),...
-                '%) of networks had permanent switch at'])
+                '%) of networks had permanent switch'])
             disp([num2str(numBVTEMP), ' of ', num2str(length(runFlag)),...
             '(',num2str(round(numBVTEMP/length(runFlag)*100,2)),...
             '%) of networks had temp',tmp, 'switch'])
@@ -216,25 +238,25 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
         [val, idx] = sort(summaryTable.("%Perm"),'descend');
 
         % PLOT SUMMARY STATS
-        subplot(1,2,1)
-        h1 = heatmap(summaryTable{idx,1:size(newValueMat,2)});
-        h1.XDisplayLabels = summaryTable.Properties.VariableNames(1:size(newValueMat,2));
-        h1.YDisplayLabels = idx;
-        title(strcat('Parameter Values', ss_type))
-        ylabel('Run Number')
+%         subplot(1,2,1)
+%         h1 = heatmap(summaryTable{idx,1:size(newValueMat,2)});
+%         h1.XDisplayLabels = summaryTable.Properties.VariableNames(1:size(newValueMat,2));
+%         h1.YDisplayLabels = idx;
+%         title(strcat('Parameter Values', ss_type))
+%         ylabel('Run Number')
+% 
+%         subplot(1,2,2)
+%         h2 = heatmap(summaryTable{idx,size(newValueMat,2)+1:end});
+%         h2.XDisplayLabels = summaryTable.Properties.VariableNames(size(newValueMat,2)+1:end);
+%         h2.YDisplayLabels = idx;
+%         title('System Trends')
+%         ylabel('Run Number')
 
-        subplot(1,2,2)
-        h2 = heatmap(summaryTable{idx,size(newValueMat,2)+1:end});
-        h2.XDisplayLabels = summaryTable.Properties.VariableNames(size(newValueMat,2)+1:end);
-        h2.YDisplayLabels = idx;
-        title(strcat("System Trends @ ", num2str(time_post), "Days post Perturbation"))
-        ylabel('Run Number')
-
-        f = gcf;
-        saveas(f,strcat(dirName,'/',strcat(dirName,'-','LHS-figure.fig')))
-
+%         f = gcf;
+%         saveas(f,strcat(dirName,'/',strcat(dirName,'-','LHS-figure.fig')))
+        
         % SAVE WORKSPACE AND WRITE SUMMARY TABLE TO EXCEL
-        ws_nm = strcat(dirName,'/',date,'-',num2str(length(pidx)),'param-mod-',num2str(ep_p - sp_p), ...
+        ws_nm = strcat(dirName,'/',date,'-v',num2str(new_val),'-',num2str(length(pidx)),'param-mod-',num2str(ep_p - sp_p), ...
             'hr-run.mat');
         save(ws_nm,'summaryTable','run_nets','sp_p','ep_p', 'pidx', 'newValueMat',...
             'param_names','ybase','allrunFlag','allmaxChangeFlag','vectorCell',...
@@ -243,10 +265,10 @@ function simulate_LHS_response_men(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,pe
         % writetable(summaryTable,strcat(extractBefore(ws_nm,'.mat'),'.xls'))
 
         % PLOT ALL TRAJECTORIES
-        if plotTraj
-            close all; 
-            LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,time_post)
-        end
+%         if plotTraj
+%             close all; 
+%             LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,time_post)
+%         end
 
         disp('/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\')
         disp(['RUN COMPLETE: saved in directory - ', dirName])

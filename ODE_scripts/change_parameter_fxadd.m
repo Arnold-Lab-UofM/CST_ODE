@@ -1,8 +1,6 @@
-%% change_parameter_men.m
-% [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p,time_post,pidx,new_val,returnNorm,plotRel,perChange)
+%% change_parameter.m
 %
-% Completes a run with a pertubation in the ODE model within the function
-% simulate_LHS_response_men.m
+% V2: subtract entry rather than multiply
 %
 % NON-GUI PROMPT:
 % [tplot,yplot,newP,pidx] = change_parameter(base_params,y0,sp_p,ep_p,pidx,new_val,returnNorm)
@@ -11,28 +9,23 @@
 % [tplot,yplot,newP,pidx] = change_parameter(base_params)
 %
 % REQUIRED INPUTS:
-%   * base_params: original parameter set
+% base_params: original parameter set
 %
 % OPTIONAL INPUTS:
-%   * y0: initial conditions
-%   * sp_p: start point for parameter change
-%   * ep_p: end point for parameter change
-%   * pidx: parameter index
-%   * new_val: new value for parameter
-%   * returnNorm: enter true if you want the parameter change to reverse to
-%   * original value, false if you want a permenant change
+% y0: initial conditions
+% sp_p: start point for parameter change
+% ep_p: end point for parameter change
+% pidx: parameter index
+% new_val: new value for parameter
+% returnNorm: enter true if you want the parameter change to reverse to
+% original value, false if you want a permenant change
 %
 % OUTPUT: trajectory data, updated parameter set (newP)
 %
 % yplot can be converted to relative abundances and used as 'run_mat' for
 % converting to SS_type using bin_to_SS.m
-%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% Christina Y. Lee
-% University of Michigan
-% May 21, 2021
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-function [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p,time_post,pidx,new_val,returnNorm,plotRel,perChange)
+function [tplot,yplot,newP,pidx] = change_parameter_fxadd(base_params,y0,sp_p,ep_p,time_post,pidx,new_val,returnNorm,plotRel,perChange)
     
     if (8 <= nargin) && (nargin < 9)
         perChange = false;
@@ -95,57 +88,40 @@ function [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p
     %% Run simulation
     tspan = [0:0.1:sp_p];
     options =[];
-    [tpre, ypre] = ode45(@lhs_ode_gLV,tspan,y0,options,base_params);
+    [tpre, ypre] = ode45(@lhs_probiotic_ode_gLV,tspan,y0,options,base_params);
     
     y0 = [ypre(end,:)];
     tspan = [sp_p:0.1:ep_p];
     options =[];
     newP = base_params;
     
-    pertType = ["foldx","percentx","plusx"];
-    pertFlag = find(contains(pertType,perChange));
-    
-    if pertFlag == 1
-        % Fold change (used in menses simulation)
+    if perChange
         if length(new_val) == 1
-            newP(pidx) = base_params(pidx)*new_val;
-        else
-            for i = 1:length(new_val)
-                newP(pidx(i)) = base_params(pidx(i))*new_val(i);
-            end
-        end
-        disp("foldx")
-    elseif pertFlag == 2
-        
-        if length(new_val) == 1
-            newP(pidx) = base_params(pidx) + abs(base_params(pidx))*new_val; % 
+            newP(pidx) = base_params(pidx) + abs(base_params(pidx))*new_val;
         else
             for i = 1:length(new_val)
                 newP(pidx(i)) = base_params(pidx(i)) + abs(base_params(pidx(i)))*new_val(i);
             end
         end
-        disp("percentx")
-    elseif pertFlag == 3
+    else
         if length(new_val) == 1
-            newP(pidx) = base_params(pidx) + new_val; % used for ABX runs
+            newP(pidx) = base_params(pidx) + new_val;
         else
             for i = 1:length(new_val)
-                newP(pidx(i)) = base_params(pidx(i)) + new_val(i);
+                newP(pidx(i)) =  base_params(pidx(i)) + new_val(i);
             end
-      
         end
-        disp("plusx")
-    else
-        disp('WARNING: please enter "foldx", "percentx" or "plusx"')
-       
     end
-    [tpost, ypost] = ode45(@lhs_ode_gLV,tspan,y0,options,newP);
+    [tpost, ypost] = ode45(@lhs_probiotic_ode_gLV,tspan,y0,options,newP);
     
     tplot = [tpre;tpost];
     yplot = [ypre;ypost];
-
+%     if plotRel
+%         yplot = yplot./sum(yplot,2);
+%     end
     xe = ep_p;
     
+    %subplot(2,3,c)
     q = xline(sp_p,'--',{'Altered', param_names{pidx}});
     hold on
     
@@ -153,7 +129,7 @@ function [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p
         y0 = [ypost(end,:)];
         tspan = [ep_p:0.1:ep_p + time_post];
         options =[];
-        [tp2, yp2] = ode45(@lhs_ode_gLV,tspan,y0,options,base_params);
+        [tp2, yp2] = ode45(@lhs_probiotic_ode_gLV,tspan,y0,options,base_params);
         
         tplot = [tpre;tpost;tp2];
         yplot = [ypre;ypost;yp2];
@@ -169,7 +145,7 @@ function [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p
         p = plot(tplot,yplot,'LineWidth',1.5);
     end
     
-    xlabel('Time (d)')
+    xlabel('Time (h)')
     ylabel('Abundance')
     set(gca,'fontsize',12)
     xlim([sp_p-20 xe])
@@ -179,7 +155,7 @@ function [tplot,yplot,newP,pidx] = change_parameter_men(base_params,y0,sp_p,ep_p
         ' to ', num2str(newP(pidx))])
     
     if plotRel == 3
-        delete(gca); close all
+%         delete(gca); close all
     end
     
 end

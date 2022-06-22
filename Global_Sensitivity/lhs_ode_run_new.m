@@ -80,7 +80,7 @@ odeSettings = lhs_ode_get_run_settings_new(lhsODESettingsFileName);
 
 %Melissa Lemke edit - add extra parameter sets in case of error
 odeSettings.NR_original = odeSettings.NR;
-odeSettings.NR = odeSettings.NR_original+ceil(odeSettings.NR_original*.1);
+odeSettings.NR = odeSettings.NR_original+ceil(odeSettings.NR_original*0);
 
 % Put current value in base workspace so the cleanup function can save it.
 assignin('base', 'odeSettings', odeSettings);

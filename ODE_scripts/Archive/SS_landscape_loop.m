@@ -21,7 +21,7 @@
 % University of Michigan
 % Jan 12, 2020
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+function [SS_map,data_out,sum_table,svnm] = SS_landscape_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
     
     if nargin <= 8
         [p1,~] = listdlg('PromptString',{'Select Parameter 1'},'ListString',...
@@ -54,11 +54,13 @@ function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,para
         p2 = varargin{2};
         p1_range = linspace(varargin{4},varargin{5},varargin{3});
         p2_range = linspace(varargin{6},varargin{7},varargin{3});
+        net_id = varargin{8};
     end
 
 tic
     N1 = length(p1_range);
     N2 = length(p2_range);
+    disp([N1,N2])
     
     if num_sp == 4
         get_info = @get_SS_info_4sp;
@@ -147,7 +149,9 @@ tic
     svnm = strrep(svnm,'>','-');
     save(svnm,...
         'p1_range', 'p2_range', 'base_params', 'p1', 'p2','param_names', ...
-        'data_out','SS_map','colors','mat_names','sum_table','a1','a2','mat_code')
+        'data_out','SS_map','colors','mat_names','sum_table','mat_code')
+    
+    savefig(strcat(extractBefore(svnm,'.mat'),'.fig'))
     
     toc
 end

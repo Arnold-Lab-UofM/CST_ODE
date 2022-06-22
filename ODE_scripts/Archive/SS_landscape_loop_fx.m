@@ -21,7 +21,7 @@
 % University of Michigan
 % Jan 12, 2020
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+function [SS_map,data_out,sum_table,svnm] = SS_landscape_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
     
     if nargin <= 8
         [p1,~] = listdlg('PromptString',{'Select Parameter 1'},'ListString',...
@@ -52,13 +52,18 @@ function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,para
     else
         p1 = varargin{1};
         p2 = varargin{2};
-        p1_range = linspace(varargin{4},varargin{5},varargin{3});
-        p2_range = linspace(varargin{6},varargin{7},varargin{3});
+%         p1_range = linspace(varargin{4},varargin{5},varargin{3});
+%         p2_range = linspace(varargin{6},varargin{7},varargin{3});
+
+        p1_range = logspace(varargin{4},varargin{5},varargin{3});
+        p2_range = logspace(varargin{6},varargin{7},varargin{3});
+        net_id = varargin{8};
     end
 
 tic
     N1 = length(p1_range);
     N2 = length(p2_range);
+    disp([N1,N2])
     
     if num_sp == 4
         get_info = @get_SS_info_4sp;
@@ -71,8 +76,8 @@ tic
     parfor i = 1:N1
         for j = 1:N2
             params = base_params;
-            params(p1) = p1_range(i);
-            params(p2) = p2_range(j);
+            params(p1) = p1_range(i)*base_params(p1);
+            params(p2) = p2_range(j)*base_params(p2);
             [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type);
             data_out{i,j} = {StableStates};
         end
@@ -106,14 +111,15 @@ tic
 
     % Plot reference lines and parameter set info:
     hold on
-    yline(0,'LineWidth',2)
-    xline(0,'LineWidth',2)
+    yline(1,'LineWidth',2)
+    xline(1,'LineWidth',2)
     
-    plot3(base_params(p2),base_params(p1),22,'o','MarkerFaceColor','k',...
-        'MarkerSize',10)
+%     plot3(base_params(p2),base_params(p1),22,'o','MarkerFaceColor','k',...
+%         'MarkerSize',10)
 
     xlim([min(p2_range) max(p2_range)])
     ylim([min(p1_range) max(p1_range)])
+    set(gca,'Xscale','log','yscale','log')
 
     % Save the SS that appeared on plot
     obs_ss = unique(SS_map);
@@ -147,7 +153,9 @@ tic
     svnm = strrep(svnm,'>','-');
     save(svnm,...
         'p1_range', 'p2_range', 'base_params', 'p1', 'p2','param_names', ...
-        'data_out','SS_map','colors','mat_names','sum_table','a1','a2','mat_code')
+        'data_out','SS_map','colors','mat_names','sum_table','mat_code')
+    
+    savefig(strcat(extractBefore(svnm,'.mat'),'.fig'))
     
     toc
 end

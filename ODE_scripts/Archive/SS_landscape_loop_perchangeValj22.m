@@ -1,4 +1,4 @@
-%% [SS_map,data_out,sum_table] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+%% [SS_map,data_out,sum_table] = SS_landscape_global_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % INPUT:
@@ -21,8 +21,8 @@
 % University of Michigan
 % Jan 12, 2020
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
-    
+function [SS_map,data_out,sum_table,svnm] = SS_landscape_global_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+    CST_state = {'1SS: [Li] CST-III';'1SS: [oLB] CST-I/II/V';'1SS: [NO] CST-IV';'2SS: [NO] CST-IV or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [Li] CST-III';'2SS: [NO] CST-IV or [Li] CST-III';'3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';'2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';'2SS: [NO] CST-IV or [NO] CST-IV'};
     if nargin <= 8
         [p1,~] = listdlg('PromptString',{'Select Parameter 1'},'ListString',...
             param_names, 'SelectionMode','multiple');
@@ -54,11 +54,16 @@ function [SS_map,data_out,sum_table,svnm] = SS_landscape(num_sp,base_params,para
         p2 = varargin{2};
         p1_range = linspace(varargin{4},varargin{5},varargin{3});
         p2_range = linspace(varargin{6},varargin{7},varargin{3});
+
+        net_id = varargin{8};
     end
+    
+    fdr_nm = varargin{9};
 
 tic
     N1 = length(p1_range);
     N2 = length(p2_range);
+    disp([N1,N2])
     
     if num_sp == 4
         get_info = @get_SS_info_4sp;
@@ -71,8 +76,8 @@ tic
     parfor i = 1:N1
         for j = 1:N2
             params = base_params;
-            params(p1) = p1_range(i);
-            params(p2) = p2_range(j);
+            params(p1) = base_params(p1) + p1_range(i)*abs(base_params(p1));
+            params(p2) = base_params(p2) + p2_range(j)*abs(base_params(p2));
             [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type);
             data_out{i,j} = {StableStates};
         end
@@ -91,63 +96,27 @@ tic
 
     end
 
-    % Plot the SS-map
-    close(gcf)
-    figure
-    % Plots the surface
-    subplot(1,4,[1 3]) % oriented so that 2nd plot looks like legend bar
-    [X,Y] = meshgrid(p2_range,p1_range); % get parameter 1 on y-axis, parameter 2 on x-axis
-    surface(X,Y,SS_map,'EdgeAlpha',0.5)
-    colormap(colors);
-    caxis([1 size(colors,1)]) % NaNs (no stable SS) as NaN/0
-    ylabel([param_names{p1}])
-    xlabel([param_names{p2}])
-   
-
-    % Plot reference lines and parameter set info:
-    hold on
-    yline(0,'LineWidth',2)
-    xline(0,'LineWidth',2)
-    
-    plot3(base_params(p2),base_params(p1),22,'o','MarkerFaceColor','k',...
-        'MarkerSize',10)
-
-    xlim([min(p2_range) max(p2_range)])
-    ylim([min(p1_range) max(p1_range)])
-
-    % Save the SS that appeared on plot
     obs_ss = unique(SS_map);
     chk_nan = obs_ss == 21;
 
     if sum(chk_nan) ~= 0
         obs_ss = obs_ss(~chk_nan);
         obs_ss_nms = horzcat(mat_names(obs_ss),{'NaN'})';
-        sum_table = array2table([obs_ss;21],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'})
+        sum_table = array2table([obs_ss;21],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
     else
         obs_ss_nms = horzcat(mat_names(obs_ss))';
-        sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'})
+        sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
     end
 
     % Plot legend
-    subplot(1,4,4)
-    imagesc(sum_table.mat_index)
-    yticks(1:length(sum_table.mat_index))
-    yticklabels(obs_ss_nms)
-    colormap(colors);
-    caxis([1 size(colors,1)])
-    xticks([0 1])
-    xticklabels({'',''})
-    xlabel('Legend')
-    
 
     % saves workspace
     op_nms = strrep(param_names,'\','');
-    op_mts_nms = strrep(mat_names(bid),' ','');
-    svnm = string(strcat('C',num2str(bid),'N',num2str(net_id),'-',op_mts_nms,'-',date,'-2D-',[op_nms{p1}],'-vs-',[op_nms{p2}],'.mat'));
+    svnm = string(strcat(fdr_nm,'/N',num2str(net_id),'-',date,'-2D-',[op_nms{p1}],'-vs-',[op_nms{p2}],'.mat'));
     svnm = strrep(svnm,'>','-');
     save(svnm,...
         'p1_range', 'p2_range', 'base_params', 'p1', 'p2','param_names', ...
-        'data_out','SS_map','colors','mat_names','sum_table','a1','a2','mat_code')
+        'data_out','SS_map','colors','mat_names','sum_table','mat_code')
     
     toc
 end

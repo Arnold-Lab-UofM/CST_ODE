@@ -15,14 +15,20 @@
 function plot_colorblock_landscape(ws_nm)
     load(ws_nm)
     figure
-    % Plots the surface
+    %% Plots the surface
     subplot(1,4,[1 3]) % oriented so that 2nd plot looks like legend bar
     [X,Y] = meshgrid(p2_range,p1_range); % get parameter 1 on y-axis, parameter 2 on x-axis
+    
+    if sum(sum(isnan(SS_map)))
+        SS_map(isnan(SS_map)) = 21;
 
-    contourf(X,Y,SS_map)
+        contourf(X,Y,SS_map,21)
+    else
+       contourf(X,Y,SS_map,21)
+    end
 
     colormap(colors);
-    caxis([0 size(colors,1)]) % NaNs (no stable SS) as NaN/0
+    caxis([1 size(colors,1)]) % NaNs (no stable SS) as NaN/0
     ylabel([param_names{p1}])
     xlabel([param_names{p2}])
 
@@ -30,17 +36,20 @@ function plot_colorblock_landscape(ws_nm)
     hold on
     yline(0,'LineWidth',2)
     xline(0,'LineWidth',2)
+    
+        plot3(base_params(p2),base_params(p1),22,'o','MarkerFaceColor','k',...
+        'MarkerSize',10,'MarkerEdgeColor','k')
 
     xlim([min(p2_range) max(p2_range)])
     ylim([min(p1_range) max(p1_range)])
 
         obs_ss = unique(SS_map);
-    chk_nan = isnan(obs_ss);
-
+    chk_nan = obs_ss == 21;
+%
     if sum(chk_nan) ~= 0
         obs_ss = obs_ss(~chk_nan);
         obs_ss_nms = horzcat(mat_names(obs_ss),{'NaN'})';
-        sum_table = array2table([obs_ss;NaN],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
+        sum_table = array2table([obs_ss;21],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
     else
         obs_ss_nms = horzcat(mat_names(obs_ss))';
         sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
@@ -52,7 +61,7 @@ function plot_colorblock_landscape(ws_nm)
     yticks(1:length(sum_table.mat_index))
     yticklabels(obs_ss_nms)
     colormap(colors);
-    caxis([0 size(colors,1)])
+    caxis([1 size(colors,1)])
     xticks([0 1])
     xticklabels({'',''})
     xlabel('Legend')

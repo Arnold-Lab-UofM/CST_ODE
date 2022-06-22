@@ -17,16 +17,19 @@
 % Jan 12, 2022
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-function analyze_Global_SS(ws_nm)
+function analyze_Global_SS(ws_nm,rm_err)
     load(ws_nm,'error_runs','LHSmatrix','odeSettings','paramMatrix','icMatrix')
     load('analytical-base.mat','numsp','S','Jmat','Type')
     LHSmat = paramMatrix;
-    erid = error_runs;
-        idx_error = NaN(size(erid));
-        for i = 1:length(erid)
-            idx_error(i) = erid{i}{1};
-        end  
-    LHSmat(idx_error,:) = [];
+    
+    if rm_err
+        erid = error_runs;
+            idx_error = NaN(size(erid));
+            for i = 1:length(erid)
+                idx_error(i) = erid{i}{1};
+            end  
+        LHSmat(idx_error,:) = [];
+    end
 
     StbleSS = cell(size(LHSmat,1),1);
     ALLSS = cell(size(LHSmat,1),1);
@@ -118,7 +121,7 @@ function analyze_Global_SS(ws_nm)
     annotation('textbox',dim,'String',str)
 
     %% Save File
-    out_nm = strcat('SSConfig-Analysis');
+    out_nm = strcat('SSConfig-Analysis-',extractBefore(ws_nm,'.mat'));
     save(out_nm,'StbleSS','S','Jmat','Type','numsp','poss_SS','noUnstable',...
         'SS_names','SS_counts','SS_percent','monosum','multisum','numUS',...
         'LHSmatrix','odeSettings','paramMatrix','icMatrix','poss_SSnames',...

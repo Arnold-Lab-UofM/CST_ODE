@@ -1,4 +1,4 @@
-%% run_LHS_analysis_template_abx.m
+%% Fig4_run_LHS_analysis_abx.m
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Goal: Simulate an antibiotic therapy (metronidazole) by impacting the

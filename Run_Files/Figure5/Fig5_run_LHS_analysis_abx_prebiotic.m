@@ -1,29 +1,37 @@
 %% run_LHS_analysis_abx_prebiotic_combo.m
 %
-% Example code for the analysis in figure 5.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Goal: Show how a combination of antibiotic (kgrow-NO) and prebiotic
+% (affecting oLB, kgrow-oLB) impact treatment of NO. This is similar to
+% code in Figure 4, but now two variables are being varied at one time andd
+% a heatmap of the treatment efficacy is returned for evaluated at a user
+% specified time point.
 %
-% Example of how to run the perturbation simulations, using menses as an
-% example. The core code has the capibility to screen for many different
-% combinations of parameter perturbations. Below, it is looking at how
-% changes to 4 different parameters at varying degrees of parameter value
-% alterations impacts community composition over time.
+% Example code for the analysis in figure 5A.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% INPUT:
+%   * SSConfig workspace generated in Figure 1
+%   * A CST Equilibrium Behavior of interest (will pull parameter sets of a
+%       certain steady-state configuation type)
+%   * Several parameters to run perturbation (see section 2)
+%
+% OUTPUT:
+%   * Folder with:
+%       * workspace with simulation results
+%       * summary figure of results (evaluated at run end point)
+%   * Running plot_comboresults.m gives heatmap of results
 %
 % REQUIRES:
-%   * Model_LHS workspace
+%   * SSConfig-Analysis-Model_[].mat
 %   * simulate_CST_EB_response.m
 %       * change_parameter_men.m
 %       * LHS_trace_visualize_new.m
-%   * plot_comboresults.m
-%
-% NOTE: Some GUI and command window prompts will appear. This is to help
-% guide the user and ensure the correct inputs are selected.
-%
+%   * [Results,~,~] = plot_comboresults(fldrnm,ev_val)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Jan 12, 2021
+% Jun 22, 2022
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 %% 1.) Loads required workspace and sets up base variables
 fdr_loc = '../workspaces/'; 
 load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS_10x.mat'), 'LHSmat','mat','StbleSS','S',...
@@ -54,11 +62,11 @@ p1 = [0 -0.1 -0.25 -0.5 -1 -2 -2.5 -3 -5]; % Fold-change in growth rate Li
 p2 = [0 0.1 0.25 0.5 1 2 2.5 3 5]; % Fold-change in growth rate Li
 vectorCell = {p1,p2}; % Get combinations
 
-L = 7; % Duration of chanve
+L = 7; % Duration of change
 sp_p = 7; % Start time of modification
 ep_p = sp_p + L; % End time of modification
 plotTraj = false; % Generate individual plots (can take a long time to run)
-perChange = "percentx"; % true = fold change, false = subtract from original
+perChange = "percentx"; % percentx (base + abs(base)*scalingFactor); plusx (base + scalingFactor); foldx (base*scalingFactor)
 time_post = 60; % Length of simulation after perturbation
 dom_ab = 0.7; % setting up initial conditions
 min_ab = (1 - dom_ab)/2; % setting up initial conditions

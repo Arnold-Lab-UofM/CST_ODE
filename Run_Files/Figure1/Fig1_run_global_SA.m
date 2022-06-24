@@ -4,7 +4,7 @@
 % parameter values using Latin Hypercube Sampling. The workspaces generated
 % in this analysis are used for all downstream analyses.
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-%  Description of code workflow:
+% Description of code workflow:
 %   (1) Run the LHS-PRCC code
 %           - Input: xlsx file
 %           - Output: Model_LHS workspace

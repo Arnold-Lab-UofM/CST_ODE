@@ -1,7 +1,10 @@
 %% Fig1_run_global_SA.m
-%
-% Generates workspace for downstream analysis. This can be completed in
-% three parts:
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Goal: Complete global sensitivity analysis given a set or possible
+% parameter values using Latin Hypercube Sampling. The workspaces generated
+% in this analysis are used for all downstream analyses.
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%  Description of code workflow:
 %   (1) Run the LHS-PRCC code
 %           - Input: xlsx file
 %           - Output: Model_LHS workspace
@@ -28,9 +31,9 @@
 %   * analyze_Global_CST_SS.m
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% Christina Y. Lee
+% Christina Y. Lee (chyylee@umich.edu)
 % University of Michigan
-% Jan 12, 2021
+% Jun 22, 2022
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% 1. Run LHS-PRCC 

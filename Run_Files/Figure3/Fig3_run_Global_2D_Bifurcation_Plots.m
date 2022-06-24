@@ -1,9 +1,14 @@
-%% Fig2_Create_Bifurcation_Plots.m
-%
-% GOAL: Of parameter sets with the same equilibrium behavior, analyze what
-% the most common effect of a permenant perturbation has on the system
+%% Fig3_run_Global_2D_Bifurcation_Plots.m
 %
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% GOAL: Of parameter sets with the same equilibrium behavior, analyze what
+% the most common effect of a permenant perturbation has on the system
+% across two axes.
+%
+% This is the code used to generate the colorblock panels in Figure 3.
+%
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
 % REQUIRED INPUTS:
 %   * Model_LHS workspace
 %   * Desired CST Equilibrium Behavior (GUI prompt)
@@ -24,19 +29,18 @@
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Jan 12, 2021
+% Jun 22, 2022
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% 1. GENERATE OR LOAD REQUIRED DATA
+%% 1. Load required data
 
-clear;clc;
 fdr_loc = '../workspaces/';
 load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS_10x.mat'),'LHSmat',...
     'mat', 'S','Jmat','Type','colors', ...
     'param_names','all_nm','StbleSS')
 
 % Pick you paraameters
-p1 = [2,3]; % growth of iners, growth of oLB
+p1 = [2,3]; % growth of L. iners, growth of oLB
 p2 = [7,10];  % Li -> NO, oLB -> NO
     
 % Value ranges (fold addition: baseline + p1*baseline)
@@ -45,7 +49,7 @@ p1max = 2.5;
 p2min = 2.5;
 p2max = -2.5;
 
-% Number of parameter values to try (51 values between p1min and p1maax)
+% Number of parameter values to try (51 values between p1min and p1max)
 pnum = 51;
 
 %% 2. Pull the Parameter Desired CST Equilibrium Behavvior
@@ -70,7 +74,6 @@ mkdir(fdr_nm)
 
 num_st = 1; % Start index
 num_fin = size(sel_nets,1); % End index
-
 
 for i = num_st:num_fin
     net_id = i;

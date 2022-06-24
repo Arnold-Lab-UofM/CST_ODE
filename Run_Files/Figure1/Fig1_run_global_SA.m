@@ -17,18 +17,19 @@
 %           - Output: SSConfig workspace w/ CST EB appended
 %                       + Figure of CST EB frequency
 %
-% REQUIRES:
-%   * Kirschner Lab Global Sensitivity Analysis Folder
-%   * lhs_ode_gLV.m (ODE matlab function)
-%   * Input excel file with LHS distributions
-%   * analyze_global_SS.m
-%   * analytical-base.mat
-%   * calc_SS_stability.m
-%       - requires "S" which is the models symbolic equations, "Jmat" which
-%       is the Jacobian of the system of ODEs, "Type" which is the
-%       formulation of ODEs (all of these values are in the
-%       analytical-base.mat workspace)
-%   * analyze_Global_CST_SS.m
+% REQUIRES: [Add folders to MATLAB path]
+%   * Kirschner Lab Global Sensitivity Analysis Folder (Global_Sensitivity)
+%   * ODE_scripts and General_scripts Folder 
+%       * lhs_ode_gLV.m (ODE matlab function)
+%       * Input excel file with LHS distributions
+%       * analyze_global_SS.m
+%       * analytical-base.mat
+%       * calc_SS_stability.m
+%           - requires "S" which is the models symbolic equations, "Jmat" which
+%           is the Jacobian of the system of ODEs, "Type" which is the
+%           formulation of ODEs (all of these values are in the
+%           analytical-base.mat workspace)
+%       * analyze_Global_CST_SS.m
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee (chyylee@umich.edu)

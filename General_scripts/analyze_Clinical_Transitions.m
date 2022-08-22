@@ -41,15 +41,19 @@ function [multi_stable_pid,multi_stable_types,mono_stable_pid,...
 
     %% 3. ANALYZE TRANSITIONS: MultiStable
     bis = zeros(length(PatSamNum),1);
+    typs = strings(length(PatSamNum),1);
     clear allq
     c = 1;
     for v = 1:length(PatSamNum)
         x = squeeze(TransMap(v,:,:))/(PatSamNum(v)-1); 
         q = diag(x);
         spl = q >= th1;
+        %if isempty(
+        %typs(v) = string(strcat(SSnms{find(spl)}));
         if sum(spl) == 2
             bis(v) = 1;
-            typs(c) = string(strcat(SSnms{find(spl)}));
+            typs(v) = string(strcat(SSnms{find(spl)}));
+            %typs(c) = string(strcat(SSnms{find(spl)}));
             c = c + 1;
         end  
         allq(:,v) = q;
@@ -62,7 +66,7 @@ function [multi_stable_pid,multi_stable_types,mono_stable_pid,...
     tabulate(typs)
 
     multi_stable_pid = ms_idx;
-    multi_stable_types = typs;
+    multi_stable_types = typs(ms_idx);
 
     %% 4. ANALYZE STABLE INDIVIDUALS
 

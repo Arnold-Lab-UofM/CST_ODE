@@ -1,4 +1,4 @@
-# CST_ODE: MATLAB Scripts for "XXXX"
+# CST_ODE: MATLAB Scripts for "Evaluation of vaginal microbiome equilibrium states identifies microbial parameters linked to resilience after menses and antibiotic therapy"
 
 ### Folder Layout
 

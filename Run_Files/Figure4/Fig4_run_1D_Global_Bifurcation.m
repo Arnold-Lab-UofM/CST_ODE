@@ -67,5 +67,5 @@ for i = num_st:num_iter
     [SS_map,data_out,sum_table,svnm] = SS_landscape_1D(3,base_params,param_names,S,Jmat,Type,...
         colors,indx,pn,p,pnumn,pnum,pnmin,pnmax,pmin,pmax,net_id,fdr_nm);
 end
-%% 3. Plot Result
+%% 3. Plot Result (require folder name of results to run "fdr_nm")
 Plot_1D_Global_Bifurcation(fdr_nm)

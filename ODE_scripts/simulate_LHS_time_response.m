@@ -1,4 +1,4 @@
-%% simulate_LHS_response.m
+%% [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSmat,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
 %
 % REQUIRES: LHS_trace_analysis.m, generate_input_combos.m, and the parallel
 % computing toolbox.

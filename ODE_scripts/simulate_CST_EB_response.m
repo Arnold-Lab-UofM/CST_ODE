@@ -31,7 +31,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,StbleSS,sel_nets,S,J
     %% 1) Parameter information
     [~, mat, ~, mat_names,~] = get_SS_info_3sp(StbleSS,true);
     close
-    sp_names = {'BV','LI','oLB'};
+    sp_names = {'NO','LI','oLB'};
     [nm_out1] = generate_parameter_names(sp_names);
     [nm_out2] = generate_coeff_labels('\alpha',sp_names);
     param_names = horzcat(nm_out1{1:length(sp_names)},nm_out2);
@@ -82,7 +82,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,StbleSS,sel_nets,S,J
     % Display run information
     disp(['Altering SS Config. ', ss_type ,' run info: '])
     disp([param_names(pidx)])
-    disp(['Duration of Alteration: ', num2str(ep_p - sp_p), 'hrs'])
+    disp(['Duration of Alteration: ', num2str(ep_p - sp_p), 'd'])
     disp(['No. Parameter Sets: ',num2str(size(run_nets,1))])
     disp(['No. Parameter Combos: ', num2str(size(newValueMat,1))])
     disp('Input parameter values:')

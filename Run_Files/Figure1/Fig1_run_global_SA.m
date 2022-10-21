@@ -30,6 +30,8 @@
 %           formulation of ODEs (all of these values are in the
 %           analytical-base.mat workspace)
 %       * analyze_Global_CST_SS.m
+%   * MATLAB TOOLBOXES: Parallel Computing Toolbox, Bioinformatics Toolbox,
+%           Symbolic Math Toolbox
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee (chyylee@umich.edu)
@@ -41,9 +43,10 @@
 % This calls the Kirschner Group's LHS-PRCC code, but allows us to tell the
 % code what settings we want to use and feed in the name of the xlsx file
 % with our parmeter ranges.
-% To use the LHS runs generate in our manuscript, skip to section #2
+% To use the LHS runs generate in our manuscript, skip to section #3 and
+% load the workspace provided in "workspaces" folder named
+% "SSConfig-Analysis-Model_LHS_10x.mat"
 
-% @lhs_ode_gLV (ODE script/formulation used here)
 lhs_ode_run_new('lhs_ode_settings_GUI')
 
 %% 2. Get Predicted Model Steady-States
@@ -51,7 +54,7 @@ lhs_ode_run_new('lhs_ode_settings_GUI')
 %   (LHS code is stochastic, will not always generate exact same parameter
 %   sets)
 
-fdr_loc = ''; % folder location
+fdr_loc = ''; % folder location of output in section #1
 lhs_nm = 'Model_LHS.mat'; % load Model_LHS workspace in #1 
 analyze_Global_SS(strcat(fdr_loc,lhs_nm),false) % Call function that determines SS configurations
 

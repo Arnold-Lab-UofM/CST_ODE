@@ -122,6 +122,28 @@ function analyze_Global_SS(ws_nm,rm_err)
     str = strcat("Mono-Stable: ", num2str(round(monosum,2))...
         , "%") + newline + strcat("Multi-Stable: ", num2str(round(multisum,2)), "%");
     annotation('textbox',dim,'String',str)
+    
+    colors = [255 242 204;
+        193 147 171;
+        108 67 197;
+        180 198 231;
+        139 23 24;
+        194 194 194;
+        21 225 204;
+        168 99 255;
+        174 164 255;
+        255 183 255;
+        255 244 111;
+        231 0 255;
+        0 2 255;
+        224 170 150;
+        80 15 201;
+        114 157 195;
+        169 208 142;
+        84 130 53;
+        55 86 35;
+        191 143 0;
+        0 0 0]./255;
 
     %% Save File
     out_nm = strcat('SSConfig-Analysis-',extractBefore(ws_nm,'.mat'));

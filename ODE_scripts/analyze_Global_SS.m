@@ -20,6 +20,9 @@
 function analyze_Global_SS(ws_nm,rm_err)
     load(ws_nm,'error_runs','LHSmatrix','odeSettings','paramMatrix','icMatrix')
     load('analytical-base.mat','numsp','S','Jmat','Type')
+    
+    sp_names = odeSettings.icNames;
+    param_names = odeSettings.paramNames;
     LHSmat = paramMatrix;
     
     if rm_err
@@ -125,5 +128,5 @@ function analyze_Global_SS(ws_nm,rm_err)
     save(out_nm,'StbleSS','S','Jmat','Type','numsp','poss_SS','noUnstable',...
         'SS_names','SS_counts','SS_percent','monosum','multisum','numUS',...
         'LHSmatrix','odeSettings','paramMatrix','icMatrix','poss_SSnames',...
-        'LHSmat','ws_nm')
+        'LHSmat','ws_nm','sp_names','param_names')
 end

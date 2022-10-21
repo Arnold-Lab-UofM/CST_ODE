@@ -74,6 +74,7 @@ nm1 = strcat(SS_namesv(indx(1)),"_VS_",SS_namesv(indx(2)));
 nm2 = regexprep(nm1,{':',' ','/'},{'-','',''});
 fittl = strcat(nm2,'.mat');
 
+delete(gcp('nocreate'))
 % Call the LASSO code
 [T_sorted_1SE, T_sorted_min, fc_count] = Parallel_Resample_BINOM(num_sets,...
     xblock,yblock,xnames,num_sel,alpha,fittl);

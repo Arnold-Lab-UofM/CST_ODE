@@ -1,4 +1,9 @@
-
+%% plot_temp_pert_results(fdr_nm)
+%
+% Input: Folder name for the output of "simulate_CST_EB_response.m"
+%
+% Output: Average trajectory plots and volcano plots for sensitive vs
+% resistant parameter sets
 
 function plot_temp_pert_results(fdr_nm)
 
@@ -27,7 +32,7 @@ function plot_temp_pert_results(fdr_nm)
     prompt = {'Initial State:','Swith Treshold:','Evaluation Point:'};
     dlgtitle = 'Input';
     dims = [1 35];
-    definput = {'LBinit/NOinit','0.6','30'};
+    definput = {'Enter LBinit or NOinit','0.6','30'};
     a = inputdlg(prompt,dlgtitle,dims,definput);
 
     sw_th = str2double(a{2});

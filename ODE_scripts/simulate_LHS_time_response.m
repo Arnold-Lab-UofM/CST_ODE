@@ -1,5 +1,6 @@
 %% [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSmat,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
 %
+%
 % REQUIRES: LHS_trace_analysis.m, generate_input_combos.m, and the parallel
 % computing toolbox.
 %
@@ -31,7 +32,7 @@ function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSma
     %pat_nm = strcat('UA',extractBetween(ws_nm,'UA','_'));
     [~, mat, ~, mat_names,~] = get_SS_info_3sp(StbleSS,true);
     close
-    sp_names = {'NO','LI','oLB'};
+    sp_names = {'BV','LI','oLB'};
 %     sp_names = {'oLB','LI','BV'}; % order is different for clinical samples
     [nm_out1] = generate_parameter_names(sp_names);
     [nm_out2] = generate_coeff_labels('\alpha',sp_names);
@@ -78,7 +79,10 @@ function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSma
 
     [newValueMat] = generate_input_combos(vectorCell);
 
-
+    % COSTUMIZE SIMULATION DETAILS
+    % ###### MODIFY HERE ######
+%     [spidx,~] = listdlg('PromptString', {'Select starting dominant species'},...
+%         'ListString',sp_names); % Pick starting state
 
     % Current "Defaults" - may change
     if nargin < 2
@@ -88,6 +92,9 @@ function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSma
         plotTraj = true; % Generate individual plots (can take a long time to run)
     end
 
+    % Less likely to be changed
+%     ybase = [0.01 0.01 0.01]; % make sure max value is your initial state of interest
+%     ybase(1) = 0.8; % From prompt, make base species your max value - FORCED BV
     returnNorm = true; % type of parameter change (temporary or permanent)
     plotRel = 3; % close plots during simulation
     run_nets = sel_nets; % Input networks 
@@ -106,8 +113,8 @@ function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSma
     % disp(['CHECK vectorCell INPUT IS IN SAME ORDER AS PARAMETERS LISTED'])
 
     % Asker User to Confirm Run Details Before Proceeding
-    str = input('Confirm Run: (Y/N)?','s');
-
+%     str = input('Confirm Run: (Y/N)?','s');
+    str = 'Y';
 
     %5) START OF CODE NOT NEEDED TO BE MODIFIED
     if upper(str) == 'Y'
@@ -125,10 +132,10 @@ function [all_run_mat] =  simulate_LHS_time_response(ybase,ss_type,StbleSS,LHSma
             mkdir(dirName)
         else
             disp('WARNING: directory already exist - please modify name')
-            newNm = inputdlg({'Enter New Name:'},'Input', [1 50], ...
-                {dirName});
-            dirName = newNm{1};
-            mkdir(dirName)
+%             newNm = inputdlg({'Enter New Name:'},'Input', [1 50], ...
+%                 {dirName});
+%             dirName = newNm{1};
+%             mkdir(dirName)
         end
 
        

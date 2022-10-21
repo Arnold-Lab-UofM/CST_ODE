@@ -1,3 +1,18 @@
+%% analyze_Global_CST_SS(fn)
+%
+% Input: SS-Config-LHSmat.mat output from the global sensitivity analysis
+% (analyze_Global_SS.m)
+%
+% Output: Updated files with CST classified steady-states, plot of SS
+%
+% Requires: 
+%   * get_VALENCIA_class.m
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Oct 21, 2022
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function analyze_Global_CST_SS(fn)
     load(fn)
     all_nm = [];

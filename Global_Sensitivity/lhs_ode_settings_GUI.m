@@ -30,7 +30,7 @@ function  ode = lhs_ode_settings_GUI()
 
     prompt = {'Number of Samples', 'Simulation Length', 'PRCC threshold','ode function'};
     dlgtitle = 'LHS-PRCC Info';
-    definput = {'500','48','0.01','@ode_fun'};
+    definput = {'500','48','0.01','@lhs_ode_gLV'};
     run_info = char(inputdlg(prompt,dlgtitle,dims,definput));
     
 % This is an example of a new format ODE LHS settings file.

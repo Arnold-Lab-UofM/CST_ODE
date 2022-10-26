@@ -9,7 +9,8 @@ function Plot_Global_Bifurcation(fdr_loc)
     SS_names = {'1SS: [Li] CST-III';'1SS: [oLB] CST-I/II/V';'1SS: [NO] CST-IV';'2SS: [NO] CST-IV or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [Li] CST-III';'2SS: [NO] CST-IV or [Li] CST-III';'3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';'2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';'2SS: [NO] CST-IV or [NO] CST-IV'};
 
     %% Extract info from files
-    n = 51;
+    load(strcat(fdr_loc,'/',ws_nms{1}),'SS_map')
+    n = size(SS_map,1);
     all_SSmap = NaN(length(ws_nms),n,n);
     all_dataout = cell(length(ws_nms),n,n);
     all_valSSmap = NaN(length(ws_nms),n,n);

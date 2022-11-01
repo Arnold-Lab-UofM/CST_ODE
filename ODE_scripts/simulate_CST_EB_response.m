@@ -100,8 +100,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,StbleSS,sel_nets,S,J
             mkdir(dirName)
         else
             disp('WARNING: directory already exist - please modify name')
-            newNm = inputdlg({'Enter New Name:'},'Input', [1 50], ...
-                {dirName});
+            newNm = inputdlg({'Enter New Name:'});
             dirName = newNm{1};
             mkdir(dirName)
         end

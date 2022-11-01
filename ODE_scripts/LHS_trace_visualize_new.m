@@ -22,6 +22,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,time_post)
+    %%
     sp_cols = [0.9290 0.6940 0.1250;
         0.5 0.5 0.5;
         0.3010 0.7450 0.9330];
@@ -30,7 +31,18 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
     [nm_out2] = generate_coeff_labels('\alpha',sp_names);
     param_names = horzcat(nm_out1{1:length(sp_names)},nm_out2);
 
+
+    
+
     for val_id = 1:size(all_run_mat,1)
+
+        runVect = all_run_mat(val_id,:);
+        clear sizPa
+        for siz_id = 1:length(runVect)
+            sizPa(siz_id) = size(runVect{siz_id},1);
+        end
+        [siztsep,idxm] = max(sizPa);
+
 
         disp(['Combination #', num2str(val_id)])
 
@@ -38,12 +50,12 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
 
         % Set up variables for parallel for loop
         NN = size(all_run_mat,2);
-        runVect = all_run_mat(val_id,:);
+        
         new_val = newValueMat(val_id,:);
-        BV = NaN(size(all_run_mat{1},1),size(all_run_mat,2));
-        oLB = NaN(size(all_run_mat{1},1),size(all_run_mat,2));
-        LI = NaN(size(all_run_mat{1},1),size(all_run_mat,2));
-        AT = NaN(size(all_run_mat{1},1),size(all_run_mat,2));
+        BV = NaN(siztsep,size(all_run_mat,2));
+        oLB = NaN(siztsep,size(all_run_mat,2));
+        LI = NaN(siztsep,size(all_run_mat,2));
+        AT = NaN(siztsep,size(all_run_mat,2));
         cf = figure(val_id);
 
         disp(['Plotting run: '])
@@ -88,6 +100,9 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
         saveas(cf,filenm)
         close
         
+        tmp = runVect{idxm};
+        terr = tmp(:,1);
+
         cf = figure(val_id);
         colororder(sp_cols)
         comb_avg = [nanmean(BV,2), nanmean(LI,2), nanmean(oLB,2)];
@@ -99,14 +114,14 @@ function LHS_trace_visualize_new(all_run_mat,newValueMat,dirName,pidx,sp_p,ep_p,
         lower_CI = comb_avg - comb_CI;
         
         
-        p = plot(tplot,comb_avg,'LineWidth',1.5);
+        p = plot(terr,comb_avg,'LineWidth',1.5);
         hold on
         
         np = brighten(sp_cols,0.8);
         
         for i = 1:3
-            p2 = plot(tplot,upper_CI(:,i),'LineWidth',1,'Color',np(i,:));
-            p3 = plot(tplot,lower_CI(:,i),'LineWidth',1,'Color',np(i,:));
+            p2 = plot(terr,upper_CI(:,i),'LineWidth',1,'Color',np(i,:));
+            p3 = plot(terr,lower_CI(:,i),'LineWidth',1,'Color',np(i,:));
         end
         
         q = xline(sp_p,'--',{'Start', param_names{pidx}});

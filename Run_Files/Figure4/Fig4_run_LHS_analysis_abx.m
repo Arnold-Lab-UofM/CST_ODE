@@ -50,7 +50,7 @@ sel_nets = LHSmat(sel_idx,:); %final parameter sets to use
 
 %% 2. Run the perturbation analysis (Below is an example for Menses)
 %   To modify for ABX, select BV as the initial dominating species, change
-%   perChange to false (now will subtract rather than fold change), change
+%   perChange to plusx (now will subtract rather than fold change), change
 %   pidx = 1 (kgrow_BV), The average value across 12 patients and 6
 %   genuses of BVAB is 2.64 h-1 in Mayer et al. 2015
 

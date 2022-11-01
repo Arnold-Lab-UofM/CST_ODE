@@ -149,14 +149,15 @@ function plot_temp_pert_results(fdr_nm)
     run_mat = sw_mat1;
     newV = newValueMat(dose_id,:);
     subplot(2,2,1)
-    LHS_trace_visualize_rmError(run_mat,newV,dirName,pidx,sp_p,ep_p,time_post)
+    get_average_traj_plots(run_mat,newV,pidx,sp_p,ep_p,time_post,'Average for Sensitive')
     set(gca,'fontsize',14,'fontname','arial')
     set(gcf,'Renderer','painters')
     %
     run_mat = sw_mat2;
     newV = newValueMat(dose_id,:);
     subplot(2,2,2)
-    LHS_trace_visualize_rmError(run_mat,newV,dirName,pidx,sp_p,ep_p,time_post)
+    %LHS_trace_visualize_rmError(run_mat,newV,dirName,pidx,sp_p,ep_p,time_post)
+    get_average_traj_plots(run_mat,newV,pidx,sp_p,ep_p,time_post,'Average for Resistant')
     set(gca,'fontsize',14,'fontname','arial')
     set(gcf,'Renderer','painters')
 
@@ -164,7 +165,8 @@ function plot_temp_pert_results(fdr_nm)
     run_mat = all_run_mat(dose_id,~idx_wr);
     newV = newValueMat(dose_id,:);
     subplot(2,2,3)
-    LHS_trace_visualize_rmError(run_mat,newV,dirName,pidx,sp_p,ep_p,time_post)
+    %LHS_trace_visualize_rmError(run_mat,newV,dirName,pidx,sp_p,ep_p,time_post)
+    get_average_traj_plots(run_mat,newV,pidx,sp_p,ep_p,time_post,'Average for All')
     set(gca,'fontsize',14,'fontname','arial')
     set(gcf,'Renderer','painters')
    

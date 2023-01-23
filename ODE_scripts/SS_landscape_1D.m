@@ -1,4 +1,5 @@
-%% [SS_map,data_out,sum_table] = SS_landscape(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+%% [data_out,svnm] = SS_landscape_1D(num_sp,base_params,param_names,S,Jmat,...
+%    pidx,pnum,pmin,pmax,net_id,fdr_nm)
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % INPUT:
@@ -7,117 +8,55 @@
 %   * param_names: names of the model parameters
 %   * S: symbolic equations
 %   * Jmat: Jacobian of ODE model
-%   * Type: formulation of gLV
-%   * colors: colormap for plot
 %   * bid: name of simulation
-%   * varagin
+%   * pidx: parameter index
+%   * pnum: number of steps
+%   * pmin: minimum value in range
+%   * pmax: maximum value in range
+%   * net_id: reference index from LHS sets
+%   * fdr_nm: where to save the files
 %
 % OUTPUT:
-%   * SS_map: steady states indicator for each combination
 %   * data_out: predicted abundances for the steady states
-%   * sum_table: summary of steady states reached
+%   * svnm: saved workspace name
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Jan 12, 2020
+% v1: Jan 12, 2020
+% v2: Jan 21, 2023 (Update to remove extra inputs, streamline for true 1
+%   parameter global bifurcation)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [SS_map,data_out,sum_table,svnm] = SS_landscape_loopVal(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+function [data_out,svnm] = SS_landscape_1D(num_sp,base_params,param_names,S,Jmat,...
+    pidx,pnum,pmin,pmax,net_id,fdr_nm)
     
-    if nargin <= 8
-        [p1,~] = listdlg('PromptString',{'Select Parameter 1'},'ListString',...
-            param_names, 'SelectionMode','multiple');
-        [p2,~] = listdlg('PromptString',{'Select Parameter 2'},'ListString',...
-            param_names, 'SelectionMode','multiple');
+    p_range = linspace(pmin,pmax,pnum);
+    num_iter = length(p_range);
 
-        prompt = {'Log (Y/N)?','min','max','number runs'};
-        dlgtitle = strcat('Input Range -',param_names{p1});
-        dims = [1 75];
-        definput = {'N','-0.2','0.2','100'};
-        a1 = inputdlg(prompt,dlgtitle,dims,definput);
-
-        dlgtitle = strcat('Input Range -',param_names{p2});
-        a2 = inputdlg(prompt,dlgtitle,dims,definput);
-
-        if a1{1} == 'Y'
-            p1_range = logspace(str2double(a1{2}),str2double(a1{3}),str2double(a1{4}));
-        else
-            p1_range = linspace(str2double(a1{2}),str2double(a1{3}),str2double(a1{4}));
-        end
-
-        if a1{2} == 'Y'
-            p2_range = logspace(str2double(a2{2}),str2double(a2{3}),str2double(a2{4}));
-        else
-            p2_range = linspace(str2double(a2{2}),str2double(a2{3}),str2double(a2{4}));
-        end
-    else
-        p1 = varargin{1};
-        p2 = varargin{2};
-        p1_range = linspace(varargin{5},varargin{6},varargin{3});
-        p2_range = linspace(varargin{7},varargin{8},varargin{4});
-
-        net_id = varargin{9};
-    end
-    
-    fdr_nm = varargin{10};
-
-
-    N1 = length(p1_range);
-    N2 = length(p2_range);
-    disp([N1,N2])
-    
-    if num_sp == 4
-        get_info = @get_SS_info_4sp;
-    elseif num_sp == 3
-        get_info = @get_SS_info_3sp;
+    data_out = cell(num_iter,1);
+    parfor i = 1:num_iter
+        params = base_params;
+        params(pidx) = base_params(pidx) + p_range(i);
+        [StableStates,~,~,~] = calc_SS_stability(num_sp,params,S,Jmat);
+        data_out{i} = {StableStates}; 
     end
 
-    data_out = cell(N1,N2);
-
-    parfor i = 1:N1
-        for j = 1:N2
-            params = base_params;
-            params(p1) = base_params(p1) + p1_range(i);
-            params(p2) = base_params(p2) + p2_range(j);
-            [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type);
-            data_out{i,j} = {StableStates};
-        end
-    end
-
-    % Analyzing data_out
-    SS_map = NaN(size(data_out));
-    for i = 1:N1
-        input_mat = data_out(i,:)';
-        [poss_SS, mat, poss_SSnames, mat_names,mat_num,mat_code] = get_info(input_mat,false);
-        SS_map(i,:) = mat_num';
-    end
-    
-    if sum(sum(isnan(SS_map)))
-       SS_map(isnan(SS_map)) = 21;
-
-    end
-
-    % Save the SS that appeared on plot
-    obs_ss = unique(SS_map);
-    chk_nan = obs_ss == 21;
-
-    if sum(chk_nan) ~= 0
-        obs_ss = obs_ss(~chk_nan);
-        obs_ss_nms = horzcat(mat_names(obs_ss),{'NaN'})';
-        sum_table = array2table([obs_ss;21],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
-    else
-        obs_ss_nms = horzcat(mat_names(obs_ss))';
-        sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
-    end
-
+    colors = [147	149	152;
+        77	190	236;
+        175	30	0;
+        107	68	197;
+        155	168	253;
+        38	38	38;
+        237	181	211;
+        255	242	204;
+        48	84	150;
+        99	0	0;
+        255	255	255]./255;
 
     % saves workspace
     op_nms = strrep(param_names,'\','');
-    op_mts_nms = strrep(mat_names(bid),' ','');
-    svnm = string(strcat(fdr_nm,'/N',num2str(net_id),'-',date,'-2D-',[op_nms{p1}],'-vs-',[op_nms{p2}],'.mat'));
+    svnm = string(strcat(fdr_nm,'/N',num2str(net_id),'-',date,'-1D-',[op_nms{pidx}],'.mat'));
     svnm = strrep(svnm,'>','-');
     save(svnm,...
-        'p1_range', 'p2_range', 'base_params', 'p1', 'p2','param_names', ...
-        'data_out','SS_map','colors','mat_names','sum_table','mat_code')
-
-    
+        'p_range', 'base_params', 'pidx','param_names','pmin','pmax','pnum', ...
+        'data_out','colors')
 end

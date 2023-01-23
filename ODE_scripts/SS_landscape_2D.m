@@ -1,4 +1,4 @@
-%% [SS_map,data_out,sum_table] = SS_landscape_global_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
+%% [SS_map,data_out,sum_table] = SS_landscape_2D(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % INPUT:
@@ -7,9 +7,6 @@
 %   * param_names: names of the model parameters
 %   * S: symbolic equations
 %   * Jmat: Jacobian of ODE model
-%   * Type: formulation of gLV
-%   * colors: colormap for plot
-%   * bid: name of simulation
 %   * varagin
 %
 % OUTPUT:
@@ -20,10 +17,12 @@
 % Christina Y. Lee
 % University of Michigan
 % Jan 12, 2020
+% UPDATE: Jan 20, 2023 (cleaned unused parameters - Type, color, 
+%   removed original SS mapping - SSmap)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [SS_map,data_out,sum_table,svnm] = SS_landscape_global_loop(num_sp,base_params,param_names,S,Jmat,Type,colors,bid,varargin)
-    CST_state = {'1SS: [Li] CST-III';'1SS: [oLB] CST-I/II/V';'1SS: [NO] CST-IV';'2SS: [NO] CST-IV or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [Li] CST-III';'2SS: [NO] CST-IV or [Li] CST-III';'3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';'2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';'2SS: [NO] CST-IV or [NO] CST-IV'};
-    if nargin <= 8
+function [data_out,svnm] = SS_landscape_2D(num_sp,base_params,param_names,S,Jmat,varargin)
+
+    if nargin <= 6
         [p1,~] = listdlg('PromptString',{'Select Parameter 1'},'ListString',...
             param_names, 'SelectionMode','multiple');
         [p2,~] = listdlg('PromptString',{'Select Parameter 2'},'ListString',...
@@ -64,12 +63,6 @@ tic
     N1 = length(p1_range);
     N2 = length(p2_range);
     disp([N1,N2])
-    
-    if num_sp == 4
-        get_info = @get_SS_info_4sp;
-    elseif num_sp == 3
-        get_info = @get_SS_info_3sp;
-    end
 
     data_out = cell(N1,N2);
 
@@ -78,37 +71,10 @@ tic
             params = base_params;
             params(p1) = base_params(p1) + p1_range(i)*abs(base_params(p1));
             params(p2) = base_params(p2) + p2_range(j)*abs(base_params(p2));
-            [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type);
+            [StableStates,~,~,~] = calc_SS_stability(num_sp,params,S,Jmat);
             data_out{i,j} = {StableStates};
         end
     end
-
-    % Analyzing data_out
-    SS_map = NaN(size(data_out));
-    for i = 1:N1
-        input_mat = data_out(i,:)';
-        [poss_SS, mat, poss_SSnames, mat_names,mat_num,mat_code] = get_info(input_mat,false);
-        SS_map(i,:) = mat_num';
-    end
-    
-    if sum(sum(isnan(SS_map)))
-       SS_map(isnan(SS_map)) = 21;
-
-    end
-
-    obs_ss = unique(SS_map);
-    chk_nan = obs_ss == 21;
-
-    if sum(chk_nan) ~= 0
-        obs_ss = obs_ss(~chk_nan);
-        obs_ss_nms = horzcat(mat_names(obs_ss),{'NaN'})';
-        sum_table = array2table([obs_ss;21],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
-    else
-        obs_ss_nms = horzcat(mat_names(obs_ss))';
-        sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'});
-    end
-
-    % Plot legend
 
     % saves workspace
     op_nms = strrep(param_names,'\','');
@@ -116,7 +82,7 @@ tic
     svnm = strrep(svnm,'>','-');
     save(svnm,...
         'p1_range', 'p2_range', 'base_params', 'p1', 'p2','param_names', ...
-        'data_out','SS_map','colors','mat_names','sum_table','mat_code')
+        'data_out')
     
     toc
 end

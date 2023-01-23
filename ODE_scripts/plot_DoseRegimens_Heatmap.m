@@ -1,32 +1,28 @@
-%% PULL RUN INFO FROM MATLAB WORKSPACES
+%% plot_DoseRegimens_Heatmap.m
 
 
-function plot_dosedur(fldrnm,dose,duration,ev_point)
+function [per_switch,total_runs] = plot_DoseRegimens_Heatmap(fldrnm,dose,duration,ev_val)
     listing = dir(fldrnm);
     file_nms = {listing.name};
     ws_nms = file_nms(contains(file_nms,'.mat'));
 
     %% ORDER OF VALUES
-    Lin = duration;
-    var_vals = dose;
 
     % RUN CALCULATION
-
-    per_switch = NaN(length(Lin),length(var_vals));
-    ev_val = ev_point;
-
+    per_switch = NaN(length(duration),length(dose));
+    total_runs = NaN(length(duration),length(dose));
     for i = 1:length(ws_nms)
         ex = ws_nms{i};
-        % val = extractBetween(ex,'v','-1param');
-        % dur = extractBetween(ex,'mod-','hr');
+
         load(strcat(fldrnm,'/',ex),'all_run_mat','ep_p','sp_p','newValueMat')
         val = newValueMat;
         dur = ep_p - sp_p;
 
-        dur_id = find(Lin == dur);
-        val_id = find(var_vals == val);
+        dur_id = find(duration == dur);
+        val_id = find(dose == val);
 
-        per_switch(dur_id,val_id) = calc_runs_switch(all_run_mat,ep_p,ev_val,0.4);
+        [per_switch(dur_id,val_id),T] = calc_runs_switch(all_run_mat,ep_p,ev_val,0.4);
+        total_runs(dur_id,val_id) = T;
     end
 
     %% PLOT OUTPUT
@@ -34,12 +30,10 @@ function plot_dosedur(fldrnm,dose,duration,ev_point)
     Y = flip(per_switch,1);
     F = flip(Y,2);
 
-    % F = per_switch;
-
     h = heatmap(F*100);
-    h.YDisplayLabels = flip(Lin);
+    h.YDisplayLabels = flip(duration);
     ylabel('Length of Pert. (days)')
-    h.XDisplayLabels = flip(string(var_vals));
+    h.XDisplayLabels = flip(string(dose));
     xlabel('Percent Change from Baseline')
     % title(strcat(ss_type,": ", param_names(pidx)))
     title(fldrnm)
@@ -47,7 +41,7 @@ function plot_dosedur(fldrnm,dose,duration,ev_point)
 end
 
 %%
-function [per_switch] = calc_runs_switch(arm,ep_p,ev_val,sw_th)
+function [per_switch,T] = calc_runs_switch(arm,ep_p,ev_val,sw_th)
     eval_point = ep_p + ev_val;
 
     eval_BV = NaN(size(arm));

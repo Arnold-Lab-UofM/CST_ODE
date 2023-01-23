@@ -1,22 +1,41 @@
+%% generate_2D_Bifurcation_plot(fdr_loc)
+%
+% Indicate folder to pull 2D bifurcation results from.
+%
+% Output are three plots:
+%   1) Relative abundance & Frequency of EB
+%   2) Plot with the most common EB across all parameter sets
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% v1: Jan 12, 2020
+% v2 :Jan 21, 2023 (Removed original SS mapping - SSmap)
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-function Plot_Global_Bifurcation(fdr_loc)
+function plot_2D_Bifurcation(fdr_loc)
     listing = dir(fdr_loc);
     nms = {listing.name};
-    ws_nms = nms(find(contains(nms,'.mat')));
+    ws_nms = nms(contains(nms,'.mat'));
 
-    SS_names = {'1SS: [Li] CST-III';'1SS: [oLB] CST-I/II/V';'1SS: [NO] CST-IV';'2SS: [NO] CST-IV or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [Li] CST-III';'2SS: [NO] CST-IV or [Li] CST-III';'3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';'2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';'2SS: [NO] CST-IV or [NO] CST-IV'};
+    SS_names = {'1SS: [Li] CST-III';
+        '1SS: [oLB] CST-I/II/V';
+        '1SS: [NO] CST-IV';
+        '2SS: [NO] CST-IV or [oLB] CST-I/II/V';
+        '2SS: [Li] CST-III or [oLB] CST-I/II/V';
+        '2SS: [Li] CST-III or [Li] CST-III';
+        '2SS: [NO] CST-IV or [Li] CST-III';
+        '3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';
+        '2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';
+        '2SS: [NO] CST-IV or [NO] CST-IV'};
 
     %% Extract info from files
-    load(strcat(fdr_loc,'/',ws_nms{1}),'SS_map')
-    n = size(SS_map,1);
-    all_SSmap = NaN(length(ws_nms),n,n);
+    load(strcat(fdr_loc,'/',ws_nms{1}),'data_out')
+    n = size(data_out,1);
     all_dataout = cell(length(ws_nms),n,n);
     all_valSSmap = NaN(length(ws_nms),n,n);
     for i = 1:length(ws_nms)
         load(strcat(fdr_loc,'/',ws_nms{i}))
-        all_SSmap(i,:,:) = SS_map;
         all_dataout(i,:,:) = data_out;
 
         val_SSmap = size(data_out);
@@ -42,11 +61,6 @@ function Plot_Global_Bifurcation(fdr_loc)
             [vd,id] = maxk(x(:,3),2);
             mostfreq = x(id(1),1);
             mostfreqval = vd(1);
-    %         if mostfreq == 11
-    %             mostfreq = x(id(2),1);
-    %             mostfreqval = vd(2);
-    %             disp('Warning: NaN is most common')
-    %         end
 
             all_mostfreq(k,j) = mostfreq;
             all_mostfreqval(k,j) = mostfreqval;
@@ -105,7 +119,6 @@ function Plot_Global_Bifurcation(fdr_loc)
             sum_table = array2table([obs_ss],'RowNames',obs_ss_nms,'VariableNames',{'mat_index'})
         end
 
-        %
         % Plot legend
         ax(2) = subplot(1,4,4);
         imagesc(sum_table.mat_index)
@@ -121,10 +134,8 @@ function Plot_Global_Bifurcation(fdr_loc)
 
 
         %%
-        
         figure(2)
-
-        ax(3) = subplot(2,4,[1 3]);
+        ax(3) = subplot(2,4,[1 4]);
         surface(X,Y,all_mostfreqval,'EdgeAlpha',0.5)
         colormap(ax(3),parula);
         caxis([0 100]) % NaNs (no stable SS) as NaN/0

@@ -1,99 +1,44 @@
 %% calc_SS_stability.m
-% [StableStates,SSval,eigval] = calc_SS_stability(num_sp,params,S,Jmat,Type)
+% [StableStates,SSval,eigval] = calc_SS_stability(N,params,S,Jmat,Type)
 %
 % Use this to calculate stability of 'GUASE'-type, 'CAlpha', 'Ralpha' type
 % generalized Lotka Volterra Equations
 %
 % Input:
-%   * num_sp = numbers of species
+%   * N = numbers of species
 %   * params = parameter set (growth rates, carrying capacity, interaction
 %       terms)
 %   * S = steady-state solutions calculated by symbolic_solns.m
 %   * Jmat = Jacobian from symbolic solns.m
-%   * Type = 'GAUSE' or 'CAlpha' dependence on type of gLV formulation
-%
 % Output: 
 %   * StableStates = all biologically relevant steady states
 %   * SSval = all steady states (unstable and negative)
 %   * eival = eigen values for each steady-state
+%   * UnstableStates = non-biologically relevant steady states
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
 % Feb 19, 2021
+% Update: Jan 20, 2023 (Removed all but gLV option, changed cell handling)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat,Type)
-     N = num_sp;
+function [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(N,params,S,Jmat)
 
     %% Example 3 species
     sstates = matlabFunction(struct2array(S));
     Jm = matlabFunction(Jmat);
 
     %% Reformat parameter order
-    if contains(lower(Type),'gause')
-      % Reformat parameter order
-        p_grow = params(1:N);
-        K = params(N+1:2*N);
-        fx = reshape(params(2*N+1:end),[N N]);
-        p_int = zeros(size(fx));
-      if contains(lower(Type),'fx')
-            for i = 1:N
-                for j = 1:N
-                    p_int(i,j) = (K(i) - fx(i,j)*K(i))/(fx(j,i)*K(j));
-                end
-            end
-      else
-          p_int = fx;
-      end
-        
-        % Remove dummy self-interaction terms
-        idx_rm = linspace(1,N^2,N);
-        newbeta = reshape(p_int,[],1);
-        newbeta(idx_rm) = [];
+    p_grow = params(1:N);
+    p_int = params(N+1:end);
 
-        ssparam = num2cell(horzcat(newbeta',K,p_grow));
+    newbeta = reshape(p_int,[],1);
 
-        SSval = arrayfun(sstates,ssparam{1:end-N},'UniformOutput',false);
-    elseif contains(lower(Type),'calpha')
-        p_grow = params(1:N);
-        K = params(N+1:2*N);
-        fx = reshape(params(2*N+1:end),[N N]);
-        p_int = zeros(size(fx));
-        for i = 1:N
-            for j = 1:N
-                if i~= j
-                    p_int(i,j) = fx(i,j);
-                else
-                    p_int(i,j) = - p_grow(i)/K(i);
-                end
-            end
-        end
-            idx_rm = linspace(1,N^2,N);
-            newbeta = reshape(p_int,[],1);
-            newbeta(idx_rm) = [];
+    ssparam = num2cell(horzcat(newbeta',p_grow));
 
-            ssparam = num2cell(horzcat(newbeta',K,p_grow));
-
-            SSval = arrayfun(sstates,ssparam{:},'UniformOutput',false);
-    elseif contains(lower(Type),'ralpha')
-            p_grow = params(1:N);
-            p_int = params(N+1:end);
-
-%             idx_rm = linspace(1,N^2,N);
-            newbeta = reshape(p_int,[],1);
-%             newbeta(idx_rm) = [];
-
-            ssparam = num2cell(horzcat(newbeta',p_grow));
-
-            SSval = arrayfun(sstates,ssparam{:},'UniformOutput',false);
-        
-    else
-        disp('Please enter: FXGAUSE, GAUSE, RALPHA or CALPHA for input Type')
-    end
+    SSval = cell2mat(arrayfun(sstates,ssparam{:},'UniformOutput',false));
 
     %% Calculate analytical SS values and stability
-  
-    SSval = SSval{1};
     eigval = NaN(size(SSval));
     % Loop through all Steady-states
     for i = 1:size(SSval,1)
@@ -104,15 +49,16 @@ function [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,p
         else
             iv = horzcat(ssparam,num2cell(SSval(i,:)));
             Jval = arrayfun(Jm,iv{:},'UniformOutput',false);
-            eigval(i,:) = eig(Jval{1});
+            eigval(i,:) = eig(cell2mat(Jval));
         end
     end
 
-    idx = max(real(eigval),[],2)<=0;
-    idx_neg = min(SSval,[],2)<0;
+    idx = max(real(eigval),[],2)<=0; % Eigen values less than or equal to zero
+    idx_neg = min(SSval,[],2)<0; % remove negative SS options
 
     StableStates = SSval(idx & ~idx_neg,:);
     UnstableStates = SSval(~idx & ~idx_neg,:);
 
 end
+
 

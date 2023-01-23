@@ -1,16 +1,9 @@
 %% symbolic_solns.m
 % [S, Jmat] = symbolic_solns(num_sp,Type)
 %
-% Use this to calculate steady states and jacobian of 'GUASE'-type or 'CAlpha' type
-% generalized Lotka Volterra Equations
-% [S, Jmat] = symbolic_solns(num_sp,Type)
+% Use this to calculate steady states and jacobian gLV
 % Input:
-%   * num_sp = numbers of species
-%   * Type = 'GAUSE', 'calpha' or 'ralpha' dependence on type of gLV formulation
-%       - Gause assumes carrying capacities and beta coefficients
-%       - C-alpha: a factorized version of Gause 
-%       - R-alpha: is the regular or tradition version of LV, generalized
-%           Lotka-Volterra [used in manuscript]
+%   * N = numbers of species
 %
 % Output: 
 %   * S = calculated steady-states
@@ -27,106 +20,42 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Feb 19, 2021
+% v2: Feb 19, 2021
+% v3: Jan 2, 2023 (changed input variable name)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-function [S, Jmat] = symbolic_solns(num_sp,Type)
-    N = num_sp; % enter number of species in the model, here we want 3
+%%
+function [S, Jmat] = symbolic_solns(N)
 
+    clear eqns sub
 
-    clear eqns
-    clear sub
-    if contains(lower(Type),'gause')
-        st_var = sym('y',[1 N]); % define state variables (the species)
-        g_var = sym('M',[1 N]); % define growth rates (on per species)
-        B_var = transpose(sym('B',[N N])); % define interaction coefficients (species x species matrix)
-        K_var = sym('K',[1 N]); % define carrying capacities(on per species);
-        for i = 1:length(st_var)
-            sub(i) = K_var(i) - st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) - B_var(i,j)*st_var(j); % populate interaction term
-                end
+    st_var = sym('y',[1 N]); % define state variables (the species)
+    g_var = sym('M',[1 N]); % define growth rates (on per species)
+    B_var = transpose(sym('B',[N N])); % define interaction coefficients (species x species matrix)
+
+    for i = 1:length(st_var)
+        sub(i) = g_var(i) + B_var(i,i)*st_var(i);
+        for j = 1:length(st_var)
+            if i ~= j
+                sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
             end
-            eqns(i) = g_var(i)*st_var(i)*(sub(i)/K_var(i)) == 0; % set equal to zero to solve for steady states
         end
-        S = solve(eqns,st_var); % solves the system of ODEs set to 0
-        
-        % Jacobian
-        clear eqns sub
-        for i = 1:length(st_var)
-            sub(i) = K_var(i) - st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) - B_var(i,j)*st_var(j); % populate interaction term
-                end
-            end
-            eqns(i) = g_var(i)*st_var(i)*(sub(i)/K_var(i));
-        end
-
-        Jmat = jacobian(eqns,[st_var]); % analytical jacobian
-    elseif contains(lower(Type),'calpha')
-        st_var = sym('y',[1 N]); % define state variables (the species)
-        g_var = sym('M',[1 N]); % define growth rates (on per species)
-        B_var = transpose(sym('B',[N N])); % define interaction coefficients (species x species matrix)
-        K_var = sym('K',[1 N]); % define carrying capacities(on per species);
-
-        for i = 1:length(st_var)
-            sub(i) = g_var(i) - (g_var(i)/K_var(i))*st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
-                end
-            end
-            eqns(i) = sub(i)*st_var(i) == 0; % set equal to zero to solve for steady states
-        end
-        S = solve(eqns,st_var); % solves the system of ODEs set to 0
-        
-        % Jacobian
-        clear eqns sub
-        for i = 1:length(st_var)
-            sub(i) = g_var(i) - (g_var(i)/K_var(i))*st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
-                end
-            end
-            eqns(i) = sub(i)*st_var(i);
-        end
-
-        Jmat = jacobian(eqns,[st_var]); % analytical jacobian
-        
-    elseif contains(lower(Type),'ralpha') % THIS IS THE GLV VERSION
-        st_var = sym('y',[1 N]); % define state variables (the species)
-        g_var = sym('M',[1 N]); % define growth rates (on per species)
-        B_var = transpose(sym('B',[N N])); % define interaction coefficients (species x species matrix)
-
-        for i = 1:length(st_var)
-            sub(i) = g_var(i) + B_var(i,i)*st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
-                end
-            end
-            eqns(i) = sub(i)*st_var(i) == 0; % set equal to zero to solve for steady states
-        end
-        S = solve(eqns,st_var); % solves the system of ODEs set to 0
-        
-        % Jacobian
-        clear eqns sub
-        for i = 1:length(st_var)
-            sub(i) = g_var(i) + B_var(i,i)*st_var(i);
-            for j = 1:length(st_var)
-                if i ~= j
-                    sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
-                end
-            end
-            eqns(i) = sub(i)*st_var(i);
-        end
-
-        Jmat = jacobian(eqns,[st_var]); % analytical jacobian
-    else
-        disp(['Please type: GAUSE, calpha, Ralpha'])
+        eqns(i) = sub(i)*st_var(i) == 0; % set equal to zero to solve for steady states
     end
+    S = solve(eqns,st_var); % solves the system of ODEs set to 0
+    
+    % Jacobian
+    clear eqns sub
+    for i = 1:length(st_var)
+        sub(i) = g_var(i) + B_var(i,i)*st_var(i);
+        for j = 1:length(st_var)
+            if i ~= j
+                sub(i) = sub(i) + B_var(i,j)*st_var(j); % populate interaction term
+            end
+        end
+        eqns(i) = sub(i)*st_var(i);
+    end
+
+    Jmat = jacobian(eqns,[st_var]); % analytical jacobian
 
 end

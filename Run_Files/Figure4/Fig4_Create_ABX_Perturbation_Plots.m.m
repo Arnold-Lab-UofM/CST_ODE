@@ -1,4 +1,4 @@
-%% Fig4_run_LHS_analysis_abx.m
+%% Fig4_run_abx_perturbation.m
 %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Goal: Simulate an antibiotic therapy (metronidazole) by impacting the
@@ -27,25 +27,26 @@
 % REQUIRES:
 %   * SSConfig-Analysis-Model_[].mat
 %   * simulate_CST_EB_response.m
-%       * change_parameter_men.m
-%       * LHS_trace_visualize_new.m
-%   * plot_temp_pert_results.m
+%       * change_parameter.m
+%       * plot_CST_EB_response.m
+%   * plot_Sensitive_vs_Resilient.m
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Jan 12, 2021
+% v1: Jan 12, 2021
+% v2: Jan 20, 2023 (Update to new naming conventions)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% 1.) Loads required workspace and sets up base variables
-fdr_loc = '../workspaces/'; 
-load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS_10x.mat'), 'LHSmat','mat','StbleSS','S',...
-    'Jmat','Type','SS_namesv','sp_names','param_names','all_nm')
+fdr_loc = '../Figure1/'; 
+load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS.mat'), 'LHSmat','StbleSS','S',...
+    'Jmat','SS_names_CST','sp_names','param_names','all_nm')
 
 % Prompt for SS type:
 [indx,~] = listdlg('PromptString',{'Pick Steady State Type:'},...
-    'ListString',SS_namesv);
+    'ListString',SS_names_CST);
 ss_id = indx;
-[sel_idx] = find(all_nm == SS_namesv(indx));
+[sel_idx] = find(all_nm == SS_names_CST(indx));
 sel_nets = LHSmat(sel_idx,:); %final parameter sets to use
 
 %% 2. Run the perturbation analysis (Below is an example for Menses)
@@ -76,12 +77,12 @@ vectorCell = {p1}; % Input as cell
 
 % Plotting & Naming
 plotTraj = false; % Generate individual plots (can take a long time to run)
-stts = extractBetween(SS_namesv{ss_id},'[',']');
-ss_type = string(strcat(extractBefore(SS_namesv{ss_id},':'),'-',join(stts,'-'))); % run name (SS configuration)
+stts = extractBetween(SS_names_CST{ss_id},'[',']');
+ss_type = string(strcat(extractBefore(SS_names_CST{ss_id},':'),'-',join(stts,'-'))); % run name (SS configuration)
 % ###### MODIFY RUN ABOVE ######
 
 %% 3. Call the function to run temp. perturbations
-[fdr_nm] = simulate_CST_EB_response(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,...
+[fdr_nm] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,...
     perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx);
 
 %% 4. Plot results
@@ -92,4 +93,5 @@ ss_type = string(strcat(extractBefore(SS_namesv{ss_id},':'),'-',join(stts,'-')))
 %   (3) Initial Dominating Species (LBinit or NOinit)
 %   (4) Dose (will give a drop down menu for you to select)
 
-plot_temp_pert_results(fdr_nm)
+[Num_Sensitive,Num_Resilient,Vol_Prism,...
+    Vol_Stats] = plot_Sensitive_vs_Resilient(fdr_nm);

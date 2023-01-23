@@ -42,4 +42,25 @@ The Global Sensitiivity folder has files created originally by the Kirschner Lab
 
 Examples of how to run the analysis are in the **Run_Files** folder.
 
+### Core ODE Code
+#### lhs_ode_gLV.m
+dy = lhs_ode_gLV(t, y, params) <br />
+This is the file that contains the ordinary differential equations for a “N” species model. I generalizes to any number of “N” species for a generalized Lotka Volterra System of Equations. For example, a three species model:
+<p align="center">
+<img width="733" alt="image" src="https://user-images.githubusercontent.com/60102200/214075348-a85a60b0-d985-4dd7-bb7f-14d58d88d406.png">
+</p>
+Make sure to enter your parameters in the order of:
+
+
+1. Growth rate terms (Indexes: #1 to #N)
+2. Interaction terms (Indexes: #N+1 to #N2 + N)
+   - Example order:
+     - i.	N1 →N1, N1 → N2, N1 →N3, N2 → N1, N2 → N2, N2→ N3, N3 → N1, N3 → N2, N3 → N3!
+
+
+<p align="center">
+<img width="318" alt="image" src="https://user-images.githubusercontent.com/60102200/214075891-f3c3d431-ed52-4131-8a5f-7aa0bb10fe33.png">
+</p>
+
+
 

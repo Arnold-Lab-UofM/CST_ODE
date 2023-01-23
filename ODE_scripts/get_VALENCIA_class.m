@@ -1,3 +1,18 @@
+%% [nmf] = get_VALENCIA_class(run_mat)
+%
+% Input a matrix of relative abundances, returns equilibirum behavior
+% classification based on VALENCIA CSTs.
+%
+% See: France, M. T. et al. VALENCIA: a nearest centroid classification
+%   method for vaginal microbial communities based on composition. 
+%   Microbiome 8, 1–15 (2020).
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Christina Y. Lee
+% University of Michigan
+% Oct 21, 2022
+% Update: Jan 20, 2023 (added comments)
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function [nmf] = get_VALENCIA_class(run_mat)
     n1 = size(run_mat,1);
     
@@ -41,3 +56,15 @@ function [nmf] = get_VALENCIA_class(run_mat)
     nmf = strcat(num2str(n1),"SS: ", nm);
 
 end
+
+function xl = sort_run_mat(run_mat)
+    mm = NaN(size(run_mat,1),1);
+    for i = 1:size(run_mat,1)
+        mm(i) = find(run_mat(i,:) == max(run_mat(i,:)));
+    end
+
+    [q,idd] = sort(mm,'ascend');
+
+    xl = run_mat(idd,:);
+end
+ 

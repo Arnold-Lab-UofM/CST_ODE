@@ -15,11 +15,15 @@
 % Christina Y. Lee
 % University of Michigan
 % Jan 12, 2022
+% Update: Jan 20, 2023 (removed loading analytic mat, added symbolic_solns
+% call)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function analyze_Global_SS(ws_nm,rm_err)
     load(ws_nm,'error_runs','LHSmatrix','odeSettings','paramMatrix','icMatrix')
-    load('analytical-base.mat','numsp','S','Jmat','Type')
+    
+    numsp = size(icMatrix,2);
+    [S, Jmat] = symbolic_solns(numsp);
     
     sp_names = odeSettings.icNames;
     param_names = odeSettings.paramNames;
@@ -40,7 +44,7 @@ function analyze_Global_SS(ws_nm,rm_err)
 
     parfor i = 1:size(LHSmat,1)
         params = LHSmat(i,:);
-        [StableStates,Sval,eigvals,UnstableStates] = calc_SS_stability(numsp,params,S,Jmat,Type);
+        [StableStates,Sval,eigvals,~] = calc_SS_stability(numsp,params,S,Jmat);
 
         StbleSS{i} = {StableStates};
         ALLSS{i} = {Sval};
@@ -51,7 +55,6 @@ function analyze_Global_SS(ws_nm,rm_err)
 
 
     %% 3) ANALYZE SS PATTERNS
-
 
     SS_vector = StbleSS;
     sp_nms = {'BV','Li','oLB'};
@@ -147,7 +150,7 @@ function analyze_Global_SS(ws_nm,rm_err)
 
     %% Save File
     out_nm = strcat('SSConfig-Analysis-',extractBefore(ws_nm,'.mat'));
-    save(out_nm,'StbleSS','S','Jmat','Type','numsp','poss_SS','noUnstable',...
+    save(out_nm,'StbleSS','S','Jmat','numsp','poss_SS','noUnstable',...
         'SS_names','SS_counts','SS_percent','monosum','multisum','numUS',...
         'LHSmatrix','odeSettings','paramMatrix','icMatrix','poss_SSnames',...
         'LHSmat','ws_nm','sp_names','param_names')

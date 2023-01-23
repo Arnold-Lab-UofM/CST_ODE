@@ -1,14 +1,9 @@
-%% Fig3_run_Global_2D_Bifurcation_Plots.m
+%% Fig2_Create_Bifurcation_Plots.m
 %
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % GOAL: Of parameter sets with the same equilibrium behavior, analyze what
 % the most common effect of a permenant perturbation has on the system
-% across two axes.
-%
-% This is the code used to generate the colorblock panels in Figure 3.
 %
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-%
 % REQUIRED INPUTS:
 %   * Model_LHS workspace
 %   * Desired CST Equilibrium Behavior (GUI prompt)
@@ -19,8 +14,7 @@
 % REQUIRED FUNCTIONS
 %   * SS_landscape_global_loop.m 
 %       * calc_SS_stability
-%       * get_SS_info_3sp.m
-%   * Plot_Global_Bifurcation.m
+%   * plot_2D_Bifurcation.m
 %
 % OUTPUTS:
 %   * Folder with a workspace saved for each parameter set
@@ -29,18 +23,20 @@
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Christina Y. Lee
 % University of Michigan
-% Jun 22, 2022
+% Jan 12, 2021
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% 1. Load required data
+%% 1. GENERATE OR LOAD REQUIRED DATA
 
-fdr_loc = '../workspaces/';
-load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS_10x.mat'),'LHSmat',...
-    'mat', 'S','Jmat','Type','colors', ...
-    'param_names','all_nm','StbleSS')
+clear;clc;
+fdr_loc = '../Figure1/';
+load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS.mat'),'LHSmat',...
+     'S','Jmat','SS_names_CST','param_names','all_nm','StbleSS')
 
-% Pick you paraameters
-p1 = [2,3]; % growth of L. iners, growth of oLB
+N = 3; % number of speces
+
+% Pick you parameters
+p1 = [2,3]; % growth of iners, growth of oLB
 p2 = [7,10];  % Li -> NO, oLB -> NO
     
 % Value ranges (fold addition: baseline + p1*baseline)
@@ -49,21 +45,19 @@ p1max = 2.5;
 p2min = 2.5;
 p2max = -2.5;
 
-% Number of parameter values to try (51 values between p1min and p1max)
-pnum = 51;
+% Number of parameter values to try (pnum values between p1min and p1max)
+pnum = 11;
 
 %% 2. Pull the Parameter Desired CST Equilibrium Behavvior
 
-CST_state = {'1SS: [Li] CST-III';'1SS: [oLB] CST-I/II/V';'1SS: [NO] CST-IV';'2SS: [NO] CST-IV or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [oLB] CST-I/II/V';'2SS: [Li] CST-III or [Li] CST-III';'2SS: [NO] CST-IV or [Li] CST-III';'3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';'2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';'2SS: [NO] CST-IV or [NO] CST-IV'};
-[indx,tf] = listdlg('ListString',CST_state);
+[indx,tf] = listdlg('ListString',SS_names_CST);
 sel_idx = [];
 for i = 1:length(indx)
-    tmp = all_nm == CST_state(indx(i));
+    tmp = all_nm == SS_names_CST(indx(i));
     sel_idx = [sel_idx; find(tmp)];
 end
 sel_nets = LHSmat(sel_idx,:);
-CST_state(indx);
-prepb = strrep(regexprep(CST_state{indx},{':','[',']','/'},{'-','','-',''}),' ','');
+prepb = strrep(regexprep(SS_names_CST{indx},{':','[',']','/'},{'-','','-',''}),' ','');
 fdr_nm = strcat(prepb,'-',date);
 mkdir(fdr_nm)
 
@@ -74,21 +68,19 @@ mkdir(fdr_nm)
 
 num_st = 1; % Start index
 num_fin = size(sel_nets,1); % End index
-
-for i = num_st:num_fin
-    net_id = i;
+for net_id = num_st:num_fin
     base_params = sel_nets(net_id,:);
     disp('~~~~~~~~~~~~~~~~~~')
     disp(strcat("RUNNING: ", " SET #", num2str(net_id)))
     disp('~~~~~~~~~~~~~~~~~~')
-    [SS_map,data_out,sum_table,svnm] = SS_landscape_global_loop(3,base_params,param_names,S,Jmat,Type,...
-        colors,indx,p1,p2,pnum,p1min,p1max,p2min,p2max,net_id,fdr_nm);
+    [data_out,svnm] = SS_landscape_2D(N,base_params,param_names,S,Jmat,...
+        p1,p2,pnum,p1min,p1max,p2min,p2max,net_id,fdr_nm);
 end
 disp('Done!')
 
 
 %% 3. Plot results of bifurcation
 % Enter desired folder name to plot
-
-Plot_Global_Bifurcation(fdr_nm)
+% fdr_nm ="1SS-Li-CST-III-20-Jan-2023/"; % Example folder name
+plot_2D_Bifurcation(fdr_nm) % call plotting function
 

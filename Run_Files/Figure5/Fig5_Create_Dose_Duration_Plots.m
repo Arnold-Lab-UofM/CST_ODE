@@ -32,15 +32,15 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% 1. Loads required workspace and sets up base variables
 clear;clc;
-fdr_loc = '../workspaces/'; 
-load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS_10x.mat'), 'LHSmat','mat','StbleSS','S',...
-    'Jmat','Type','SS_namesv','sp_names','param_names','all_nm')
+fdr_loc = '../Figure1/'; 
+load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS.mat'), 'LHSmat','StbleSS','S',...
+    'Jmat','SS_names_CST','sp_names','param_names','all_nm')
 
 % Prompt for CST Equilibrium Behavior:
 [indx,tf] = listdlg('PromptString',{'Pick Steady State Type:'},...
-    'ListString',SS_namesv);
+    'ListString',SS_names_CST);
 ss_id = indx;
-[sel_idx] = find(all_nm == SS_namesv(indx));
+[sel_idx] = find(all_nm == SS_names_CST(indx));
 sel_nets = LHSmat(sel_idx,:); %final parameter sets to use
 %% 2. Run Dose and Duration Simulations 
 
@@ -49,7 +49,7 @@ pidx = [1]; % index of parameter of interest
 Lin = [1 7 14 21 60]; % duration (days)
 var_vals = [-3 -2 -1 -0.75 -0.5 0]; % dose
 time_post = 50; % how far after alteration to analyze
-perChange = false; % (same as percentx: base + abs(base)*scalingFactor)
+perChange = "plusx"; % (same as percentx: base + abs(base)*scalingFactor)
 
 % Initial Conditions
 indx = 1; sp_idx = indx; % idx of dominant species
@@ -58,7 +58,7 @@ ybase(sp_idx) = dom_ab;
 
 % Other Conditions
 plotTraj = false; % Generate individual plots (can take a long time to run)
-ss_type = strrep(SS_namesv{ss_id},'/','');
+ss_type = strrep(SS_names_CST{ss_id},'/','');
 
 % Loop to look at combinations
 for v = 1:length(var_vals)
@@ -68,14 +68,16 @@ for v = 1:length(var_vals)
         L = Lin(i);
         sp_p = 7; % Start time of modification
         ep_p = sp_p + L; % End time of modification
-        [arm] = simulate_LHS_time_response(ybase,ss_type,StbleSS,sel_nets,S,Jmat,Type,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx);
+%         [arm] = simulate_LHS_time_response(ybase,ss_type,...
+%             sel_nets,S,Jmat,perChange,sp_p,ep_p,time_post,vectorCell,pidx);
+        [arm] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx);
     end
 end
 %% 3. Plot Results
 dose = var_vals; % selected doses
 duration = Lin; % selected duration
 ev_point = 0; % Time point for evaluation (post regimen)
-fldrnm = '2SS: [NO] CST-IV or [Li] CST-III_1D_k_grow-BV_22-Jun-2022'; % Example folder
+fldrnm = '1SS: [NO] CST-IV_1D_k_grow-NO_23-Jan-2023'; % Example folder
 
 % run plot file
-plot_dosedur(fldrnm,dose,duration,ev_point)
+[percent_switch,total_runs] = plot_DoseRegimens_Heatmap(fldrnm,dose,duration,ev_point);

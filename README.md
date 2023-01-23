@@ -62,5 +62,67 @@ Make sure to enter your parameters in the order of:
 <img width="318" alt="image" src="https://user-images.githubusercontent.com/60102200/214075891-f3c3d431-ed52-4131-8a5f-7aa0bb10fe33.png">
 </p>
 
+#### symbolic_soln.m
+[S, Jmat] = symbolic_solns(N) <br />
+
+Input:
+    - N = number of species
+Output:
+    - S = symbolic math solution to steady-states of system of ODEs
+    - Jmat = symbolic math solution of the Jacobian for the system of ODEs
+ 
+ <br />
+For any “N” species model of gLV equations: This function will calculate the number of steady-states, and define the steady-states by the input parameters in the model (output, “S”). The file will also determine the jacobian of the system of ODEs given the gLV format for any “N” species model (output, “Jmat”).
+
+#### calc_SS_stability.m
+[StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(N,params,S,Jmat) <br />
+
+Input:
+    - N = number of species
+    - S = symbolic math solution to steady-states of system of ODEs
+    - Jmat =  symbolic math solution of the Jacobian for the system of ODEs
+Outpus:
+    - StableStates = a number of positive, stable states by "N" number of species matrix
+    - SSval = all steady-states (stable and unstable, negative or positive) matrix
+    - eival = eigenvalues for each steady-statte
+    - UnstableStates = a number of negative and/or unstable states by "N" number of species matrix
+
+<br />
+Get the stability of each steady-state given a certain parameter set for a “N” species model. Requires the symbolic solutions to steady-states, “S”, and Jacobian of the model, “Jmat”.
+
+#### Example Code for Analytical Analysis of ODEs
+```MATLAB
+% 1. run the ODE equation 
+options = [];
+params = [1,1,1,-1,0,0,0,-2,0,0,0,-3]; % parameters
+y0 = [0.1 0.1 0.1]; % initial conditions
+tpsan = [0,10]; % time span
+
+[t,y] = ode45(@lhs_ode_gLV,tpsan,y0,options,params); % call ODE file
+
+% visualize results
+plot(t,y)
+legend({'Species 1','Species 2','Species 3'})
+xlabel('Time')
+ylabel('Abundance')
+title('Example ODE Function Run')
+hold on
+
+% 2. get steady-states and jacobian using linear stability analysis
+[S, Jmat] = symbolic_solns(num_sp); % NOTE: only need to run once (large systems will take a long time to solve)
+disp(strcat(num2str(size(Jmat,1)), " species model "))
+
+% 3. determine stability of a given parameter set given symbolic SS,
+% Jacobian
+[StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(num_sp,params,S,Jmat);
+disp(strcat("Steady States Abundances: ", num2str(StableStates)))
+
+% finish plotting with analytic solutions addedd to plot
+sp_labels = ["Species #1 = ";"Species #2 = ";"Species #3  = "];
+sp_amt = string(StableStates)';
+legend(sp_labels+sp_amt)
+set(gca,'fontsize',14)
+```
+
 
 

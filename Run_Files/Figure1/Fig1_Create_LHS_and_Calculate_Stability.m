@@ -1,4 +1,4 @@
-%% Fig1_run_global_SA.m
+%% Fig1_Create_LHS_and_Calculate_Stability.m
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Goal: Complete global sensitivity analysis given a set or possible
 % parameter values using Latin Hypercube Sampling. The workspaces generated
@@ -12,23 +12,14 @@
 %           - Input: Model_LHS workspace
 %           - Output: SSConfig workspace
 %                       + Figure of Model SS frequency
-%   (3) Relate Model SS to CST Equilibrium Behavior (EB)
-%           - Input SSConfig workspace
-%           - Output: SSConfig workspace w/ CST EB appended
 %                       + Figure of CST EB frequency
 %
 % REQUIRES: [Add folders to MATLAB path]
-%   * Kirschner Lab Global Sensitivity Analysis Folder (Global_Sensitivity)
-%   * ODE_scripts and General_scripts Folder 
-%       * lhs_ode_gLV.m (ODE matlab function)
 %       * Input excel file with LHS distributions
 %       * analyze_global_SS.m
-%       * analytical-base.mat
 %       * calc_SS_stability.m
 %           - requires "S" which is the models symbolic equations, "Jmat" which
-%           is the Jacobian of the system of ODEs, "Type" which is the
-%           formulation of ODEs (all of these values are in the
-%           analytical-base.mat workspace)
+%           is the Jacobian of the system of ODEs
 %       * analyze_Global_CST_SS.m
 %   * MATLAB TOOLBOXES: Parallel Computing Toolbox, Bioinformatics Toolbox,
 %           Symbolic Math Toolbox

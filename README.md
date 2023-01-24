@@ -139,9 +139,9 @@ Input:
 Output:
     - New workspace that calculates the frequency of each model steady-state for all the "simulated samples" from the uncertainty analysis
         - "SSConfig-Analysis-YOURWORKSPACENAME.mat", default would be "SSConfig-Analysis-Model_LHS.mat"
-<p align="center">     
-![image](https://user-images.githubusercontent.com/60102200/214114458-415b646e-17ae-4d01-9443-02c99df40609.png)
-</p>
+   
+![image](https://user-images.githubusercontent.com/60102200/214115611-823c1556-8777-4352-bab9-49c9fc13f2d8.png)
+
 
 #### analyze_Global_CST_SS.m
 Input:
@@ -149,9 +149,9 @@ Input:
 Output:
     - Conversion of model steady-state types to CSTs by using a nearest centroid classifiers where the centroids are defined by VALENCIA (France et al. 2020)
 
-<p align="center"> 
-![image](https://user-images.githubusercontent.com/60102200/214114632-37df1a70-e814-4e0a-9e32-fc5974494bd8.png)
-</p>
+
+![image](https://user-images.githubusercontent.com/60102200/214115639-a0d7bacc-10c2-4ad2-a1b4-b41cb5b69832.png)
+
 
 
 

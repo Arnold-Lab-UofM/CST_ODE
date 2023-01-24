@@ -11,7 +11,7 @@
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% 1. Load Data
 clear;clc;
-load('Figure1/SSConfig-Analysis-Model_LHS.mat')
+load('../Figure1/SSConfig-Analysis-Model_LHS.mat')
 
 %% 2. Pull Data (Choose 2 States to Compare)
 [indx,~] = listdlg('ListString',SS_names_CST);

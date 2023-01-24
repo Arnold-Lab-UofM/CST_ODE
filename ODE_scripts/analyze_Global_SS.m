@@ -19,52 +19,43 @@
 % call)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-function analyze_Global_SS(ws_nm,rm_err)
-    load(ws_nm,'error_runs','LHSmatrix','odeSettings','paramMatrix','icMatrix')
-    
-    numsp = size(icMatrix,2);
-    [S, Jmat] = symbolic_solns(numsp);
-    
-    sp_names = odeSettings.icNames;
-    param_names = odeSettings.paramNames;
-    LHSmat = paramMatrix;
-    
-    if rm_err
-        erid = error_runs;
-            idx_error = NaN(size(erid));
-            for i = 1:length(erid)
-                idx_error(i) = erid{i}{1};
-            end  
-        LHSmat(idx_error,:) = [];
-    end
+function analyze_Global_SS(LHSmat,sp_names)
 
+    % Generate parameter & model information
+    N = length(sp_names); % Number of species in model
+    [S, Jmat] = symbolic_solns(N); % symbolic solutions to N species model
+    
+    % Parameter names given input species names
+    [nm_out1] = generate_parameter_names(sp_names);
+    [nm_out2] = generate_coeff_labels('\alpha',sp_names);
+    param_names = horzcat(nm_out1{1:length(sp_names)},nm_out2);
+
+
+    %% Caculate steady-states for a given parameter set in LHSmat
     StbleSS = cell(size(LHSmat,1),1);
     ALLSS = cell(size(LHSmat,1),1);
     eigSS = cell(size(LHSmat,1),1);
 
-    parfor i = 1:size(LHSmat,1)
+    parfor i = 1:size(LHSmat,1) % loops through "simulated samples"
         params = LHSmat(i,:);
-        [StableStates,Sval,eigvals,~] = calc_SS_stability(numsp,params,S,Jmat);
-
+        [StableStates,Sval,eigvals,~] = calc_SS_stability(N,params,S,Jmat);
         StbleSS{i} = {StableStates};
         ALLSS{i} = {Sval};
         eigSS{i} = {eigvals};
     end
 
-    %[poss_SS, mat, poss_SSnames, mat_names,mat_num,mat_code] = get_SS_info_3sp(StbleSS,true)
 
+    %% 3) ANALYZE MODEL SS MONO- VS MULTI- STTABILITY
 
-    %% 3) ANALYZE SS PATTERNS
+    % Names for possible steady-states in model
+    poss_SSnames = {'Co-elim','NO','Li','oLB',...
+            'NO&Li', 'NO&oLB', 'Li&oLB', 'NOLi&oLB'};
+    poss_SS = strings(size(StbleSS,1),1);
 
-    SS_vector = StbleSS;
-    sp_nms = {'BV','Li','oLB'};
-
-    poss_SSnames = {'Co-elim','BV','Li','oLB',...
-            'BV&Li', 'BV&oLB', 'Li&oLB', 'BVLi&oLB'};
-    poss_SS = strings(size(SS_vector,1),1);
-
-    for i = 1:size(SS_vector,1)
-        temp = SS_vector{i}{:};
+    % Loop tthrough and name each state (looks to see how many states are
+    % possible, 0: Unstable, 1: Mono-stable, 2: Bi-stable... etc.)
+    for i = 1:size(StbleSS,1)
+        temp = StbleSS{i}{:};
         num_SS = size(temp,1);
         if num_SS == 0
             poss_SS(i) = "All Unstable";
@@ -73,7 +64,7 @@ function analyze_Global_SS(ws_nm,rm_err)
             fnm = [];
             for j = 1:num_SS
                 stmp = temp(j,:) > 0;
-                nm = strcat(sp_nms{stmp});
+                nm = strcat(sp_names{stmp});
                 if sum(stmp) > 1
                     nm = strcat(nm," or ");
                 elseif sum(stmp) == 1
@@ -89,7 +80,7 @@ function analyze_Global_SS(ws_nm,rm_err)
         end
     end
 
-    tabulate(poss_SS)
+    tabulate(poss_SS) % countts response pattern (prior to removing unstable)
 
     %% 4) COMPILE OUTPUT
     noUnstable = poss_SS; % remove unstable states
@@ -107,10 +98,11 @@ function analyze_Global_SS(ws_nm,rm_err)
     monosum = sum(SS_percent(idx1SS));
     multisum = sum(SS_percent(~idx1SS));
 
-    % PLOT
+    % PLOT REULT
     [v,i] = sort(SS_percent,'descend');
     n = length(v);
 
+    figure(1)
     bar(v)
     xticks(1:n)
     xticklabels(SS_names(i))
@@ -149,9 +141,65 @@ function analyze_Global_SS(ws_nm,rm_err)
         0 0 0]./255;
 
     %% Save File
-    out_nm = strcat('SSConfig-Analysis-',extractBefore(ws_nm,'.mat'));
-    save(out_nm,'StbleSS','S','Jmat','numsp','poss_SS','noUnstable',...
-        'SS_names','SS_counts','SS_percent','monosum','multisum','numUS',...
-        'LHSmatrix','odeSettings','paramMatrix','icMatrix','poss_SSnames',...
-        'LHSmat','ws_nm','sp_names','param_names')
+  out_nm = strcat('SSConfig-Analysis.mat');
+
+  save(out_nm,'StbleSS','S','Jmat','N','poss_SS','noUnstable',...
+        'SS_names','SS_counts','SS_percent','monosum','multisum','numUS','poss_SSnames',...
+        'LHSmat','colors','sp_names','param_names','ALLSS','eigSS')
+    
+  figure(2)
+  analyze_Global_CST_SS(out_nm)
+end
+
+function analyze_Global_CST_SS(fn)
+    load(fn)
+    all_nm_CST = [];
+    for idx = 1:length(StbleSS)
+        run_mat = cell2mat(StbleSS{idx});
+        [nmf] = get_VALENCIA_class(run_mat); % CONVERT TO VALENCIA CST TYPE
+        all_nm_CST = [all_nm_CST; nmf];
+    end
+
+    tabulate(all_nm_CST)
+
+    % PLOT THE OUTPUT WITH NO-SS REMOVED
+    poss_SSv = all_nm_CST;
+
+    noUnstablev = poss_SSv; % remove unstable states
+    noUnstablev(contains(poss_SSv,"0SS")) = [];
+
+    numUS = length(poss_SSv) - length(noUnstablev);
+
+    out = tabulate(noUnstablev);
+    SS_names_CST = out(:,1);
+    SS_counts_CST = [out{:,2}]';
+    SS_percent_CST = [out{:,3}]';
+
+    idx1SS = contains(SS_names_CST,'1SS');
+
+    monosum = sum(SS_percent_CST(idx1SS));
+    multisum = sum(SS_percent_CST(~idx1SS));
+
+    [v,i] = sort(SS_percent_CST,'descend');
+    n = length(v);
+
+    bar(v)
+    xticks(1:length(v))
+    xticklabels(SS_names_CST(i))
+    xtickangle(270)
+    hold on
+
+    text(1:n,v,string(round(v,3)'),'vert','bottom','horiz','center'); 
+    ylabel('Percent of Stable Steady-States')
+
+    dim = [.65 .8 .2 .1];
+    str = strcat("Mono-Stable: ", num2str(round(monosum,2))...
+        , "%") + newline + strcat("Multi-Stable: ", num2str(round(multisum,2)), "%");
+    annotation('textbox',dim,'String',str)
+    title('Equilibrium Behaviors (Model SS Classified to CSTs)')
+
+
+    % 4. Append VALCENIA CST to data
+    save(fn,'all_nm_CST','SS_names_CST','SS_percent_CST','SS_counts_CST',...
+        '-append')
 end

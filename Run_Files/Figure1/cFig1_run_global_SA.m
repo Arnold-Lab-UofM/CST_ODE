@@ -37,34 +37,30 @@
 % Christina Y. Lee (chyylee@umich.edu)
 % University of Michigan
 % Jun 22, 2022
+% Jan 23, 2023 (Updated to be more efficient)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% 1. Run LHS-PRCC 
-% This calls the Kirschner Group's LHS-PRCC code, but allows us to tell the
-% code what settings we want to use and feed in the name of the xlsx file
-% with our parmeter ranges.
-% To use the LHS runs generate in our manuscript, skip to section #3 and
-% load the workspace provided in "workspaces" folder named
-% "SSConfig-Analysis-Model_LHS_10x.mat"
+%% 1. Generate LHS Parameter Set Given an Excel File
 
-lhs_ode_run_new('lhs_ode_settings_GUI')
+flnm = 'lhs_settings_input.xlsx'; % Excel file with necessary parameters
+[params,ICs] = pull_LHS_parameters(flnm);
 
-%% 2. Get Predicted Model Steady-States
-% 'Model_LHS.mat' is the output generate from section #1 in our
-%   (LHS code is stochastic, will not always generate exact same parameter
-%   sets)s
+NR = 500; % Number of "samples", our work uses 5000
 
-fdr_loc = ''; % folder location of output in section #1
-lhs_nm = 'Model_LHS.mat'; % load Model_LHS workspace in #1 
-analyze_Global_SS(strcat(fdr_loc,lhs_nm),false) % Call function that determines SS configurations
+paramMatrix = defineMatrix(params, NR,'parameter'); % Generates LHS parameter sets
 
-%% 3. Get CST Equilibrium Behavior
-% To relate model SS to clinical behavior, a nearest centroid classifier
-% bins each model SS to a CST from centroid published in France et al.,
-% 2020 (VALENCIA)
+%% 2. Get Predicted Model Steady-States & CST Classisfied Equilibrium Behavior
 
-fn = 'SSConfig-Analysis-Model_LHS.mat';
-analyze_Global_CST_SS(fn)
+% LHS is stochastic, to use our generated parameter sets, please load the
+% parameter space from "workspaces/SSConfig-Analysis-Model_LHS_10x.mat'".
+% load('../workspaces/SSConfig-Analysis-Model_LHS_10x.mat','paramMatrix'),
+% otherwise, you can run "analyze_Global_SS.m".
+%   - Enter: paramMatrix (LHS generated parameter space: NR by number of
+%   parameters double)
+s
+analyze_Global_SS(paramMatrix,{'NO','Li','oLB'}) % Call function that determines SS configurations
+
+
 
 
 

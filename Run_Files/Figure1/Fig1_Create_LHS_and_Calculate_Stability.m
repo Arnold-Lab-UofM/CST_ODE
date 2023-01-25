@@ -48,8 +48,9 @@ paramMatrix = defineMatrix(params, NR,'parameter'); % Generates LHS parameter se
 % otherwise, you can run "analyze_Global_SS.m".
 %   - Enter: paramMatrix (LHS generated parameter space: NR by number of
 %   parameters double)
-s
-analyze_Global_SS(paramMatrix,{'NO','Li','oLB'}) % Call function that determines SS configurations
+%
+% Note: Older versions of code may have 'NO' rather than 'nAB'
+analyze_Global_SS(paramMatrix,{'nAB','Li','oLB'}) % Call function that determines SS configurations
 
 
 

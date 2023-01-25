@@ -12,19 +12,19 @@ Instructions to run code:
 The Run Files folder has scripts for generating each figure in the main text of the manuscript and the workspaces with any additional data needed to complete the analysis.
 
 - Figure1
-    - Fig1_run_global_SA.m
+    - Fig1_Create_LHS_and_Calculate_Stability.m
     - lhs_settings_input.xlsx _(input file for LHS pipeline)_
 - Figure2
-   - Fig2_compare_1SS_2SS.m
+   - Fig2_Create_Volcanos_1SS_2SS.m
 - Figure3
-    - Fig3_run_Global_2D_Bifurcation_Plots.m
-    - Fig3_run_LHS_analysis_menses.m
+    - Fig3_Create_Global_2D_Bifurcation_Plots.m
+    - Fig3_Create_Menses_Perturbation_Plots.m
 - Figure4
-    - Fig4_run_1D_Global_Bifurcation.m
-    - Fig4_run_LHS_analysis_abx.m
+    - Fig4_Create_1D_Global_Bifurcation.m
+    - Fig4_Create_ABX_Perturbation_Plots.m
 - Figure5
-    - Fig5_run_LHS_analysis_abx_prebiotic.m
-    - Fig5_run_LHS_analysis_BV_abx_dose_dur.m
+    - Fig5_Create_Dose_Duration_Plots.m
+    - Fig5_Create_ABX_Prebiotic_Plots.m
 - Workspaces
     - 2022-04-29-VALENCIA-16s-to-SS-type.mat _(Patient data by VALENCIA CSTs)_
     - HMP-UAB-MetaData.mat _(patient data on menses, antibiotic use, etc.)_

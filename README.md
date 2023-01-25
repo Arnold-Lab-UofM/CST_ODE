@@ -138,7 +138,6 @@ Input:
 Output:
     - LHS parameter space ("simulated samples")
     
-
    
 #### analyze_Global_SS(LHSmat,sp_names)
 Input:
@@ -148,14 +147,14 @@ Output:
     - Linear stability analysis of each LHS set
     - Plot of frequencies of each moel steady-state type
     - Conversion of model steady-state types to CSTs by using a nearest centroid classifiers where the centroids are defined by VALENCIA (France et al. 2020)
-        - Uses: analyze_Global_CST_SS(fn), where fn is the file output generated in analyze_Global_SS
+    - Uses: analyze_Global_CST_SS(fn), where fn is the file output generated in analyze_Global_SS
 
 ![image](https://user-images.githubusercontent.com/60102200/214115611-823c1556-8777-4352-bab9-49c9fc13f2d8.png)
 
 ![image](https://user-images.githubusercontent.com/60102200/214115639-a0d7bacc-10c2-4ad2-a1b4-b41cb5b69832.png)
 
-```MATLAB
 #### Example of Generate LHS Parameter Sets
+```MATLAB
 %% 1. Generate LHS Parameter Set Given an Excel File
 
 flnm = 'lhs_settings_input.xlsx'; % Excel file with necessary parameters

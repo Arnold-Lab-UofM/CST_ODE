@@ -1,4 +1,4 @@
-%% [PrismFormat,SummaryStats] = generate_Volcano_plot(matrix1,matrix2,alpha,offset,param_names,classes)
+%% [PrismFormat,SummaryStats] = plot_Volcano(matrix1,matrix2,alpha,offset,param_names,classes)
 %
 % INPUT:
 %   * matrix1 & matrix2: parameter sets you want to compare
@@ -68,7 +68,7 @@ function [PrismFormat,SummaryStats] = plot_Volcano(matrix1,matrix2,alpha,offset,
     title(classes)
     
     %
-    PrismFormat = NaN(12,4);
+    PrismFormat = NaN(length(param_names),4);
     
     PrismFormat(:,1) = DIF;
     PrismFormat(idxL,2) = -log10(FDR(idxL));

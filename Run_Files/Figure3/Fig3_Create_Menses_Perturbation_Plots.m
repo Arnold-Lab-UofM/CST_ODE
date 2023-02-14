@@ -28,13 +28,13 @@
 %% 1.) Loads required workspace and sets up base variables
 fdr_loc = '../Figure1/'; 
 load(strcat(fdr_loc,'SSConfig-Analysis-Model_LHS.mat'), 'LHSmat','StbleSS','S',...
-    'Jmat','SS_names_CST','sp_names','param_names','all_nm')
+    'Jmat','SS_names_CST','sp_names','param_names','all_nm_CST')
 
 % Prompt for SS type:
 [indx,~] = listdlg('PromptString',{'Pick Steady State Type:'},...
     'ListString',SS_names_CST);
 ss_id = indx;
-[sel_idx] = find(all_nm == SS_names_CST(indx));
+[sel_idx] = find(all_nm_CST == SS_names_CST(indx)); % all_nm has been updated to all_nm_CST in some versions of code (Number of LHS samples x 1 string array)
 sel_nets = LHSmat(sel_idx,:); %final parameter sets to use
 
 %% 2. Run the perturbation analysis (Below is an example for Menses)

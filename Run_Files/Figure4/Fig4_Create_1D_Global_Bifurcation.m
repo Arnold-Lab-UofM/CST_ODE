@@ -26,7 +26,7 @@
 %% 1. Load Required Datan and Enter Bifurcation Parameters
 fdr_loc = '../Figure1';
 load(strcat(fdr_loc,'/SSConfig-Analysis-Model_LHS.mat'),'LHSmat',...
-    'S','Jmat', 'param_names','all_nm','StbleSS','SS_names_CST')
+    'S','Jmat', 'param_names','all_nm_CST','StbleSS','SS_names_CST')
 
 % ###### Modify here #######
 % Select Bifurcation Parameter
@@ -42,7 +42,7 @@ pnum = 30; % number of iterations
 [indx,tf] = listdlg('ListString',SS_names_CST);
 sel_idx = [];
 for i = 1:length(indx)
-    tmp = all_nm == SS_names_CST(indx(i));
+    tmp = all_nm_CST == SS_names_CST(indx(i)); % all_nm has been updated to all_nm_CST in some versions of code (Number of LHS samples x 1 string array)
     sel_idx = [sel_idx; find(tmp)];
 end
 sel_nets = LHSmat(sel_idx,:);

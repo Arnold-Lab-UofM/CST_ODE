@@ -72,7 +72,7 @@ ybase = repmat(min_ab,[1,3]); ybase(sp_idx) = dom_ab; % setting up initial condi
 % Perturbation Methodology & Parameter Selection
 perChange = "plusx"; % percentx (base + abs(base)*scalingFactor); plusx (base + scalingFactor); foldx (base*scalingFactor)
 pidx = [1]; % index of growth rate parameters for NO
-p1 = [0  -0.5 -1 -2 -2.64 -5]; % Scaling Factor for NO growth (death)
+p1 = [0  -0.5 -1 -2 -2.64 -5]'; % Scaling Factor for NO growth (death)
 vectorCell = {p1}; % Input as cell
 
 % Plotting & Naming

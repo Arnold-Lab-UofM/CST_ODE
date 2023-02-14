@@ -45,7 +45,7 @@ Examples of how to run the analysis are in the **Run_Files** folder.
 ### Core ODE Code
 #### lhs_ode_gLV.m
 dy = lhs_ode_gLV(t, y, params) <br />
-This is the file that contains the ordinary differential equations for a “N” species model. I generalizes to any number of “N” species for a generalized Lotka Volterra System of Equations. For example, a three species model:
+This is the file that contains the ordinary differential equations for a “N” species model. I generalizes to any number of “N” species for a generalized Lotka Volterra System of Equations. For example, a three species model (NO stands for non-optimal and is the same group as nAB, non-optimal anaerobic bacteria):
 <p align="center">
 <img width="733" alt="image" src="https://user-images.githubusercontent.com/60102200/214075348-a85a60b0-d985-4dd7-bb7f-14d58d88d406.png">
 </p>
@@ -65,9 +65,9 @@ Make sure to enter your parameters in the order of:
 #### symbolic_soln.m
 [S, Jmat] = symbolic_solns(N) <br />
 
-Input:
+- Input:
     - N = number of species
-Output:
+- Output:
     - S = symbolic math solution to steady-states of system of ODEs
     - Jmat = symbolic math solution of the Jacobian for the system of ODEs
  
@@ -77,11 +77,11 @@ For any “N” species model of gLV equations: This function will calculate the
 #### calc_SS_stability.m
 [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(N,params,S,Jmat) <br />
 
-Input:
+- Input:
     - N = number of species
     - S = symbolic math solution to steady-states of system of ODEs
     - Jmat =  symbolic math solution of the Jacobian for the system of ODEs
-Outpus:
+- Outputs:
     - StableStates = a number of positive, stable states by "N" number of species matrix
     - SSval = all steady-states (stable and unstable, negative or positive) matrix
     - eival = eigenvalues for each steady-statte
@@ -126,24 +126,23 @@ set(gca,'fontsize',14)
 
 ### Figure 1: Uncertainty Analysis to Generate in silico "Patient Populations"
 #### [params,ICs] = pull_LHS_parameters(flnm)
-Input:
-	flnm is an Excel sheet: see example (where you will define parameter ranges): “lhs_settings_input.xlsx”. 
-    It will read in the parameter ranges in a format needed to run LHS.
+- Input:
+	- flnm is an Excel sheet: see example (where you will define parameter ranges): “lhs_settings_input.xlsx”.  It will read in the parameter ranges in a format needed to run LHS.
 
 #### paramMatrix = defineMatrix(params, NR,'parameter'); 
-Input:
+- Input:
     - params: parameter ranges defined into a cell array (1 x number of parameters)
         - within each parameter cell is a 1x4 cell of: parameter name, min, max, distribution ('u' for uniform)
     - NR: number of LHS sets to generate
-Output:
+- Output:
     - LHS parameter space ("simulated samples")
     
    
 #### analyze_Global_SS(LHSmat,sp_names)
-Input:
+- Input:
     - LHSmat: LHS parameter space (NR x number of parameter sets matrix)
     - sp_names: Name of each "species" in the model
-Output:
+- Output:
     - Linear stability analysis of each LHS set
     - Plot of frequencies of each moel steady-state type
     - Conversion of model steady-state types to CSTs by using a nearest centroid classifiers where the centroids are defined by VALENCIA (France et al. 2020)

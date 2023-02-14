@@ -97,6 +97,7 @@ options = [];
 params = [1,1,1,-1,0,0,0,-2,0,0,0,-3]; % parameters
 y0 = [0.1 0.1 0.1]; % initial conditions
 tpsan = [0,10]; % time span
+num_sp = length(y0); % number of species
 
 [t,y] = ode45(@lhs_ode_gLV,tpsan,y0,options,params); % call ODE file
 

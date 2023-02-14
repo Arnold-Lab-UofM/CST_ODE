@@ -27,6 +27,7 @@
 
 function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perChange,sp_p,ep_p,time_post,plotTraj,vectorCell,pidx)
     
+%%
     %Parameter information
     sp_names = {'NO','LI','oLB'};
     [nm_out1] = generate_parameter_names(sp_names);
@@ -59,7 +60,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
         answ = 'User Input values: check order matches parameter order';
     end
 
-    % Generates all possible combinations of parameters
+    %% Generates all possible combinations of parameters
     if length(vectorCell) == 1
         newValueMat = vectorCell{:};
 
@@ -67,6 +68,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
         [newValueMat] = generate_input_combos(vectorCell);
     end
 
+    
     returnNorm = true; % type of parameter change (temporary or permanent)
     plotRel = 3; % close plots during simulation
 
@@ -84,8 +86,9 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
 
     tic
     pnm = strcat(param_names{[pidx]});
-    pnmD = regexprep(pnm,{'{','}','\','>'},{'','','',''});
-    dirName = strcat(ss_type,'_',num2str(length(pidx)),'D_',pnmD,'_',date);
+    pnmD = regexprep(pnm,{'{','}','\','>',':','[',']'},{'','','','','','',''});
+    ss_typ_fix = regexprep(ss_type,{'{','}','\','>',':','[',']'},{'','','','','','',''});
+    dirName = strcat(ss_typ_fix,'_',num2str(length(pidx)),'D_',pnmD,'_',date);
     if not(isfolder(dirName))
         mkdir(dirName)
     else
@@ -93,7 +96,6 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
 
     end
 
-   
     disp('/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\')
     disp(['BEGINNING RUN: files to be saved in directory - ', dirName])
     disp('\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/')

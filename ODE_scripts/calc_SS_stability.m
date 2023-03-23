@@ -53,7 +53,7 @@ function [StableStates,SSval,eigval,UnstableStates] = calc_SS_stability(N,params
         end
     end
 
-    idx = max(real(eigval),[],2)<=0; % Eigen values less than or equal to zero
+    idx = max(real(eigval),[],2)<0; % Eigen values less than zero
     idx_neg = min(SSval,[],2)<0; % remove negative SS options
 
     StableStates = SSval(idx & ~idx_neg,:);

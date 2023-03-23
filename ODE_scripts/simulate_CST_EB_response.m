@@ -85,7 +85,8 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
     tic
     pnm = strcat(param_names{[pidx]});
     pnmD = regexprep(pnm,{'{','}','\','>'},{'','','',''});
-    dirName = strcat(ss_type,'_',num2str(length(pidx)),'D_',pnmD,'_',date);
+%     dirName = strcat(ss_type,'_',num2str(length(pidx)),'D_',pnmD,'_',date);
+    dirName = strcat(ss_type,'_','-',num2str(size(sel_nets,1)),'lhs-day',num2str(sp_p),'-',date);
     if not(isfolder(dirName))
         mkdir(dirName)
     else
@@ -103,6 +104,7 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
     NL = size(sel_nets,1);
 
     % LOOP THRU ALL VALUES IN THE NEW VALUE MATRIX
+    [~,mxidx] = max(ybase);
     parfor val_id = 1:size(newValueMat,1)
         new_val = newValueMat(val_id,:);
         NewSS = cell(NL,1);
@@ -112,8 +114,13 @@ function [dirName] = simulate_CST_EB_response(ybase,ss_type,sel_nets,S,Jmat,perC
 
             % Determine base SS
             [OGSS,~,~] = calc_SS_stability(length(sp_names),base_params,S,Jmat);
-
-            y0 = ybase*sum(OGSS(1,:)); % Set initial conditions based on input
+            [~,midxss] = max(OGSS,[],2);
+            [~,id] = intersect(midxss,mxidx);
+            if isempty(id)
+                id = 1;
+            end
+            
+            y0 = ybase*sum(OGSS(id,:)); % Set initial conditions based on input
 
             % START PLOTTING ALL TRAJECTORIES FOR GIVEN SET
             [tplot,yplot,newP,~] = change_parameter(base_params,y0,sp_p,ep_p,time_post,...

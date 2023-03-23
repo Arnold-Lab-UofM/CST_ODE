@@ -6,7 +6,9 @@ function plot_network(net_vect,sp_names,sp_cols,intDir,intThick,ttl)
     G = digraph(mdl);
     h = plot(G);
     
-    load('colormaps.mat')
+%     load('colormaps.mat')
+
+    myredblue = redblue(100);
     colormap(myredblue);
     h.EdgeCData = intDir;
     h.LineWidth = intThick.*3;

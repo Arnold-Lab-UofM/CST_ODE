@@ -203,14 +203,22 @@ function get_average_traj_plots(run_mat,newValueMat,pidx,sp_p,ep_p,time_post,fig
         np = brighten(sp_cols,0.8);
         
         for i = 1:3
-            p2 = plot(terr,upper_CI(:,i),'LineWidth',1,'Color',np(i,:));
-            p3 = plot(terr,lower_CI(:,i),'LineWidth',1,'Color',np(i,:));
+%             p2 = plot(terr,upper_CI(:,i),'LineWidth',1,'Color',np(i,:));
+%             p3 = plot(terr,lower_CI(:,i),'LineWidth',1,'Color',np(i,:));
+            curve1 = upper_CI(:,i)';
+            curve2 = lower_CI(:,i)';
+            inBetweenRegionX = [terr', fliplr(terr')];
+            inBetweenRegionY = [curve1, fliplr(curve2)];
+            fill(inBetweenRegionX, inBetweenRegionY, sp_cols(i,:),...
+                'FaceAlpha',0.3,'EdgeColor',sp_cols(i,:));
+            hold on
+            p = plot(terr,comb_avg(:,i),'LineWidth',1.5,'Color',sp_cols(i,:));
         end
         
         q = xline(sp_p,'--',{'Start', param_names{pidx}});
         q2 = xline(ep_p,'--',{'Finish', param_names{pidx}});
         q3 = xline(ep_p+30,'--',{'1mo post'});
-        legend(p,[sp_names])
+%         legend(p,[sp_names])
         xlabel('Time (days)')
         ylabel('Abundance')
         set(gca,'fontsize',12)

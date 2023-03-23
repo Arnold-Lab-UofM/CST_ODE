@@ -37,7 +37,7 @@ function analyze_Global_SS(LHSmat,sp_names)
     eigSS = cell(size(LHSmat,1),1);
 
     parfor i = 1:size(LHSmat,1) % loops through "simulated samples"
-        disp(strcat("Set #", strcat(i)))
+        disp(strcat("Set #", num2str(i)))
         params = LHSmat(i,:);
         [StableStates,Sval,eigvals,~] = calc_SS_stability(N,params,S,Jmat);
         StbleSS{i} = {StableStates};

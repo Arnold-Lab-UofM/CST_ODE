@@ -52,19 +52,20 @@ function [PrismFormat,SummaryStats] = plot_Volcano(matrix1,matrix2,alpha,offset,
     idxL = idxLR & idxsig;
     
     plot(DIF(idxL),-log10(FDR(idxL)),'o','MarkerFaceColor',[59 110 178]/255,'MarkerEdgeColor','k',...
-        'MarkerSize',10)
+        'MarkerSize',5)
     hold on
     plot(DIF(idxR),-log10(FDR(idxR)),'o','MarkerFaceColor',[194 171 131]/255,'MarkerEdgeColor','k',...
-        'MarkerSize',10)
+        'MarkerSize',5)
     hold on
     plot(DIF(~idxsig),-log10(FDR(~idxsig)),'o','MarkerFaceColor',[200 200 200]/255,'MarkerEdgeColor','k',...
-        'MarkerSize',10)
+        'MarkerSize',5)
+    set(gca,'fontname','arial')
     yline(-log10(alpha),'LineStyle',':')
     xline(0,'LineStyle',':','LineStyle',':')
-    text(DIF+offset,-log10(FDR)+offset,param_names)
+    text(DIF+offset,-log10(FDR)+offset,param_names,'fontname','arial','fontsize',6)
     xlabel('Rank Difference')
     ylabel('-log10(q-value)')
-    set(gca,'fontsize',14,'fontname','arial')
+    
     title(classes)
     
     %

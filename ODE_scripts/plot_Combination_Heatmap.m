@@ -15,10 +15,15 @@
 % University of Michigan
 % Jan 22, 2023
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [results,total_runs,param_values1,param_values2] = plot_Combination_Heatmap(fdr_loc,ev_val)
-    listing = dir(fdr_loc);
-    file_nms = {listing.name};
-    ws_nms = file_nms(contains(file_nms,'.mat'));
+function [results,total_runs,param_values1,param_values2] = plot_Combination_Heatmap(fdr_loc,ev_val,th)
+    if isfolder(fdr_loc)
+        listing = dir(fdr_loc);
+        file_nms = {listing.name};
+        ws_nms = file_nms(contains(file_nms,'.mat'));
+    else
+        msg = 'Folder not found, please check folder name and location';
+        error(msg)
+    end
 
     % ORDER OF VALUES
     load(strcat(fdr_loc,'/',ws_nms{1}))
@@ -38,7 +43,7 @@ function [results,total_runs,param_values1,param_values2] = plot_Combination_Hea
         v1_id = find(param_values1 == val(1));
         v2_id = find(param_values2 == val(2));
 
-        [per_switch(v2_id,v1_id),~,T] = calc_runs_switch(arm,ep_p,ev_val,0.4);
+        [per_switch(v2_id,v1_id),~,T] = calc_runs_switch(arm,ep_p,ev_val,th);
         total_runs(v2_id,v1_id) = T;
     end
 
@@ -48,11 +53,12 @@ function [results,total_runs,param_values1,param_values2] = plot_Combination_Hea
     results = F*100;
     h = heatmap(results);
     h.XDisplayLabels = param_values1;
-    ylabel(strcat("Fold Addition: ", param_names{pidx(1)}))
+   xlabel(strcat("Addition: ", param_names{pidx(1)}))
     h.YDisplayLabels = flip(param_values2);
-    xlabel(strcat("Fold Addition: ", param_names{pidx(2)}))
+    ylabel(strcat("Addition: ", param_names{pidx(2)}))
     title(fdr_loc)
     caxis([0,100])
+    colormap(redblue(100))
 
     total_runs = flip(total_runs,1);
 end

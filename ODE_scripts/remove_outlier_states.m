@@ -1,6 +1,7 @@
 
 function rm_indx = remove_outlier_states(sel_nets,ybase,S,Jmat,tspan)
    
+%%
     [~,mxidx] = min(ybase);
     tall = cell(size(sel_nets,1),1);
     yall = cell(size(sel_nets,1),1);

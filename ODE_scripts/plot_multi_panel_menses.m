@@ -1,6 +1,7 @@
 function [Dose_Counts,total_runs] = plot_multi_panel_menses(ws_name,th,sp_idx,dose_ids,xlimit)
     load(ws_name)
 
+    %%
     eval_points = [0:0.25:ep_p,ep_p+1:1:time_post+ep_p];
 
     param_names = {'k_{grow}-nAB',	'k_{grow}-Li',...
@@ -49,10 +50,10 @@ function [Dose_Counts,total_runs] = plot_multi_panel_menses(ws_name,th,sp_idx,do
         
         if sp_idx == 1
             sw_idx = 1 - Evaluation_Data(:,1,1) > th;
-            Counts = 1 - squeeze(sum(Evaluation_Data(:,:,1) > th));
+            Counts = squeeze(1-sum(Evaluation_Data(:,:,1) > th));
         else
             sw_idx = Evaluation_Data(:,1,1) > th;
-            Counts = squeeze(sum(Evaluation_Data(:,:,sp_idx) > th));
+            Counts = squeeze(sum(Evaluation_Data(:,:,1) > th));
         end
 
         Dose_Counts(d_id,:) = Counts;

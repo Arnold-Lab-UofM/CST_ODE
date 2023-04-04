@@ -1,7 +1,6 @@
-function [f1,f2,f3,f4,f5,Dose_Counts] = plot_multi_panel_ABX(ws_name,th,sp_idx,dose_ids,xlimit)
+function [f1,f2,f3,f4,f5,Dose_Counts] = plot_multi_panel_ABX_v2(ws_name,th,sp_idx,dose_ids,xlimit)
     load(ws_name)
-%%
-    
+
     eval_points = [0:0.25:ep_p,ep_p+1:1:time_post+ep_p];
 
     param_names = {'k_{grow}-nAB',	'k_{grow}-Li',...
@@ -10,6 +9,31 @@ function [f1,f2,f3,f4,f5,Dose_Counts] = plot_multi_panel_ABX(ws_name,th,sp_idx,d
     	'\alpha_{Li->nAB}',	'\alpha_{Li->Li}',...
     	'\alpha_{Li->oLB}',	'\alpha_{oLB->nAB}',...
     	'\alpha_{oLB->Li}'	'\alpha_{oLB->oLB}'};
+
+        colors = [147	149	152;
+        77	190	236;
+        175	30	0;
+        107	68	197;
+        155	168	253;
+        38	38	38;
+        237	181	211;
+        255	242	204;
+        48	84	150;
+        99	0	0;
+        255	255	255]./255;
+
+        SS_names = {'1SS: [Li] CST-III';
+        '1SS: [oLB] CST-I/II/V';
+        '1SS: [NO] CST-IV';
+        '2SS: [NO] CST-IV or [oLB] CST-I/II/V';
+        '2SS: [Li] CST-III or [oLB] CST-I/II/V';
+        '2SS: [Li] CST-III or [Li] CST-III';
+        '2SS: [NO] CST-IV or [Li] CST-III';
+        '3SS: [NO] CST-IV or [Li] CST-III or [oLB] CST-I/II/V';
+        '2SS: [oLB] CST-I/II/V or [oLB] CST-I/II/V';
+        '2SS: [NO] CST-IV or [NO] CST-IV'};
+
+        [~,col_id] = intersect(SS_names,unique(all_nm_CST));
     
     
     Nd = length(dose_ids);
@@ -63,70 +87,44 @@ function [f1,f2,f3,f4,f5,Dose_Counts] = plot_multi_panel_ABX(ws_name,th,sp_idx,d
                     % Delayed Response
     
         r = Nd;
-%         subplot(r,4,r*d_id - (r-1))
         f1 = figure;
         s1 = ~sw_idx1 & ~sw_idx2;
-        plot_trajectories(select_plot(s1,:,:),eval_points,sp_p,ep_p,time_post)
         str = 'No Response: ';
-        title(strcat(str, " ", num2str(round(Counts(1)*100,1)), "% Samples"),'FontSize',6)
-        set(gca,'fontname','Arial') 
-        xlim([0 ep_p+xlimit])
-        ax = gca;
-        ax.LineWidth = 1;
-        ax.XColor = 'k'; % Red
-        ax.YColor = 'k'; % Blue
-        ax.FontSize = 7;
-    
-        f2 = figure;
-        s2 = sw_idx1 & ~sw_idx2;
-        plot_trajectories(select_plot(s2,:,:),eval_points,sp_p,ep_p,time_post)
-        str = '%.1f%% Samples';
-        tit = sprintf(str,Counts(2)*100);
-        title(strcat("Recurrent Response: ", tit),'FontSize',6)
-        set(gca,'fontname','Arial') 
-        xlim([0 ep_p+xlimit])
-        ax = gca;
-        ax.LineWidth = 1;
-        ax.XColor = 'k'; % Red
-        ax.YColor = 'k'; % Blue
-        ax.FontSize = 7;
-    
+        Count = Counts(1);
+        color_sub = colors(col_id,:);
+        format_w_bar_EB(str,s1,Count,color_sub,all_nm_CST,xlimit,select_plot,eval_points,sp_p,ep_p,time_post)
+ 
         
-        f3 = figure;
-       s3 = sw_idx1 & sw_idx2;
-        plot_trajectories(select_plot(s3,:,:),eval_points,sp_p,ep_p,time_post)
-        str = '%.1f%% Samples';
-        tit = sprintf(str,Counts(3)*100);
-        title(strcat("Sustained Response: ", tit),'FontSize',12)
-        set(gca,'fontname','Arial') 
-        xlim([0 ep_p+xlimit])
-      ax = gca;
-        ax.LineWidth = 1;
-        ax.XColor = 'k'; % Red
-        ax.YColor = 'k'; % Blue
-        ax.FontSize = 7;
+        f2 = figure;
+        str = "Transient Response: ";
+        Count = Counts(2);
+        color_sub = colors(col_id,:);
+        s2 = sw_idx1 & ~sw_idx2;
+        format_w_bar_EB(str,s2,Count,color_sub,all_nm_CST,xlimit,select_plot,eval_points,sp_p,ep_p,time_post)
     
+ 
+        f3 = figure;
+        str = "Sustained Response: ";
+        Count = Counts(3);
+        color_sub = colors(col_id,:);
+        s3 = sw_idx1 & sw_idx2;
+        format_w_bar_EB(str,s3,Count,color_sub,all_nm_CST,xlimit,select_plot,eval_points,sp_p,ep_p,time_post)
 
+     
         f4 = figure;
+        str = "Delayed Response: ";
+        Count = Counts(4);
+        color_sub = colors(col_id,:);
         s4 = ~sw_idx1 & sw_idx2;
-        plot_trajectories(select_plot(s4,:,:),eval_points,sp_p,ep_p,time_post)
-        str = '%.1f%% Samples';
-        tit = sprintf(str,Counts(4)*100);
-        title(strcat("Delayed Response: ", tit),'FontSize',12)
-        set(gca,'fontname','Arial') 
-        xlim([0 ep_p+xlimit])
-        ax = gca;
-        ax.LineWidth = 1;
-        ax.XColor = 'k'; % Red
-        ax.YColor = 'k'; % Blue
-        ax.FontSize = 7;
+        format_w_bar_EB(str,s4,Count,color_sub,all_nm_CST,xlimit,select_plot,eval_points,sp_p,ep_p,time_post)
 
+        %%
         nets_switch = sel_nets(s3|s4,:); % updated for error + Bv start
         nets_reb = sel_nets(s1|s2,:);
         sel_nets1 = nets_switch;
         sel_nets2 = nets_reb;
         offset = 0.075;
-        alpha = 0.05;
+        alpha = 0.01;
         
         classes = {'Switch','Rebound'};
         f5 = figure;
@@ -146,13 +144,43 @@ function [f1,f2,f3,f4,f5,Dose_Counts] = plot_multi_panel_ABX(ws_name,th,sp_idx,d
     ax.FontSize = 7;
 
     %%
-    r_id = s1;
+
+
+end
+
+function counts_EB = get_EB_freq(all_nm_CST,r_id)
     un_names = unique(all_nm_CST);
     names_dat = all_nm_CST(r_id);
     counts_EB = NaN(1,length(un_names));
     for nm_c = 1:length(un_names)
         counts_EB(nm_c) = sum(un_names(nm_c) == names_dat);
     end
-        
+end
 
+function format_w_bar_EB(resp_name,s,Count,color_sub,all_nm_CST,xlimit,select_plot,eval_points,sp_p,ep_p,time_post)
+        subplot(5,1,[1,4])
+        plot_trajectories(select_plot(s,:,:),eval_points,sp_p,ep_p,time_post)
+        str = '%.1f%% Samples';
+        tit = sprintf(str,Count*100);
+        title(strcat(resp_name, tit),'FontSize',6)
+        set(gca,'fontname','Arial') 
+        xlim([0 ep_p+xlimit])
+        ax = gca;
+        ax.LineWidth = 1;
+        ax.XColor = 'k'; 
+        ax.YColor = 'k'; 
+        ax.FontSize = 7;
+        
+        counts_EB = get_EB_freq(all_nm_CST,s);
+        subplot(5,1,5)
+        Y = counts_EB/sum(counts_EB)*100;
+        b = barh(1,Y,'stacked');
+        ax = gca;
+        colororder(ax,color_sub)
+        ylim([0.75 1.25])
+        yticklabels("")
+        ax.FontSize = 7;
+        ax.XColor = 'k';
+        text(cumsum(Y),ones(size(Y)),string(round(Y,1)) + "%",'HorizontalAlignment', 'right', ...
+            'VerticalAlignment', 'middle','FontSize',ax.FontSize)
 end

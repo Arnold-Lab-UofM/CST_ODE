@@ -11,7 +11,7 @@ Instructions to run code:
 #### Run Files
 The Run Files folder has scripts for generating each figure in the main text of the manuscript and the workspaces with any additional data needed to complete the analysis.
 
-- G1_EB (Files for Equilbirum Behavior (EB) Generation)
+- G1_EB _(Files for Equilbirum Behavior (EB) Generation)_
     - G1_Create_LHS_and_Calculate_Stability.m
         - First file to run, generates base/initial parameter distributions using lhs_settings_input.xlsx
     - lhs_settings_input.xlsx _(input file for LHS pipeline)_
@@ -21,22 +21,33 @@ The Run Files folder has scripts for generating each figure in the main text of 
         - Creates reference population that is used to match the HMP and Gajer cohorts
             - SSConfig-Analysis-HMP.mat
             - SSConfig-Analysis-Gajer.mat
-- G2_Menses (Files for Analysis of Menses-related EB)
-   - Fig2_Create_Volcanos_1SS_2SS.m
-- Figure3
-    - Fig3_Create_Global_2D_Bifurcation_Plots.m
-    - Fig3_Create_Menses_Perturbation_Plots.m
-- Figure4
-    - Fig4_Create_1D_Global_Bifurcation.m
-    - Fig4_Create_ABX_Perturbation_Plots.m
-- Figure5
-    - Fig5_Create_Dose_Duration_Plots.m
-    - Fig5_Create_ABX_Prebiotic_Plots.m
+- G2_Menses _(Files for Analysis of Menses-related EB)_
+    - G2_MENSES_Run_TimeSeries_Analysis.m
+        - Start here, filters out parameter sets that do not satisfy control conditions
+    - G2_MENSES_Run_2D_Bifurcation.m
+        - Run using workspaces generated in "...Run_TimeSeries_Analysis"
+            - Examples are in the MensesTimeSeries/ folder
+    - G2_MENSES_Plot_Volcano_Bifurcations.m
+    - G2_MENSES_Plot_Compile_TimeSeries_Figures.m
+        - Requires clinical data for HMP cohort (workspaces folder)
+- G3_ABX _(Files for Analysis of Antibiotic-related EB)_
+    - G3_ABX_Run_TimeSeries_Analysis.m
+        - Start here,filters out parameter sets that do not satisfy control conditions
+    - G3_ABX_Run_1D_Bifurcation_and_Volcanos.m
+        - Run using workspaces generated in "...Run_TimeSeries_Analysis"
+            - Examples are in the ABXTimeSeries/ folder
+    - G3_ABX_Compile_TimeSeries_Figures.m
+- G4_ALT_Therapies _(Files for prebiotic/antibiotic combinations and dose/duration analysis)_
+    - G4_Run_ABX_Prebiotic_Simulations.m
+        - Requires workspace in: ../G3_ABX/ABXTimeSeries/
+    - G4_Run_Dose_Duration_Simulations.m
+        - Requires workspace in: ../G3_ABX/ABXTimeSeries/
+    - G4_Visualize_Alternative_Therapies.m
 - Workspaces
-    - 2022-04-29-VALENCIA-16s-to-SS-type.mat _(Patient data by VALENCIA CSTs)_
-    - HMP-UAB-MetaData.mat _(patient data on menses, antibiotic use, etc.)_
-    - HMP-UAB-RelAbundance-Trajectories.mat _(clinical data - relative abundance over time)_
-    - SSConfig-Analysis-Model_LHS10x.mat _(Equilvalent output from Figure1/ run script)_
+    - Mar16-2023-EB.mat _(equilbrium behavior assignments to HMP data)_
+    - HMPData.mat _(clinical data - relative abundance over time)_
+    - GajerData.mat _(clinical data - relative abundance over time)_
+    - SSConfig-Analysis-Model_LHS10x.mat _(Equilvalent output from G1_Create_LHS... run script)_
 
 #### ODE Scripts
 The ODE Scripts folder contains the core functiions required to complete the simulations in the manuscript. The core model is found in _lhs_ode_gLV.m_ and is called within many of the other functions within the folder such as _change_parameter.m_, which runs the model for different parameter values.

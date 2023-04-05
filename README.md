@@ -11,10 +11,17 @@ Instructions to run code:
 #### Run Files
 The Run Files folder has scripts for generating each figure in the main text of the manuscript and the workspaces with any additional data needed to complete the analysis.
 
-- Figure1
-    - Fig1_Create_LHS_and_Calculate_Stability.m
+- G1_EB (Files for Equilbirum Behavior (EB) Generation)
+    - G1_Create_LHS_and_Calculate_Stability.m
+        - First file to run, generates base/initial parameter distributions using lhs_settings_input.xlsx
     - lhs_settings_input.xlsx _(input file for LHS pipeline)_
-- Figure2
+    - G1_Analyze_Clinical_Equilibrium_Behaviors.m
+        - Analyzes clinical data sets and assigned and EB subtype
+    - G1_Generate_Reference_Virtual_Patients.m
+        - Creates reference population that is used to match the HMP and Gajer cohorts
+            - SSConfig-Analysis-HMP.mat
+            - SSConfig-Analysis-Gajer.mat
+- G2_Menses (Files for Analysis of Menses-related EB)
    - Fig2_Create_Volcanos_1SS_2SS.m
 - Figure3
     - Fig3_Create_Global_2D_Bifurcation_Plots.m

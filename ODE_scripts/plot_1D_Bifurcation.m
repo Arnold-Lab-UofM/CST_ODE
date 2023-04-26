@@ -9,7 +9,7 @@
 % v2: Jan 21, 2023 (cleaned to not have remnants of 2D nomencalture, and
 %   added comments)
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function plot_1D_Bifurcation(fdr_loc)
+function plotdat  = plot_1D_Bifurcation(fdr_loc)
     listing = dir(fdr_loc);
     nms = {listing.name};
     ws_nms = nms(contains(nms,'.mat'));

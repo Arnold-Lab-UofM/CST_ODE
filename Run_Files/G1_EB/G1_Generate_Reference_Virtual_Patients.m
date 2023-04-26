@@ -47,8 +47,8 @@ EB_names = {'1SS: [Li] CST-III';
     '1SS: [oLB] CST-I/II/V';
     '1SS: [NO] CST-IV';
     '2SS: [NO] CST-IV or [Li] CST-III';
-    '2SS: [NO] CST-IV or [Li] CST-III';
-    '2SS: [NO] CST-IV or [Li] CST-III'};
+    '2SS: [Li] CST-III or [oLB] CST-I/II/V';
+    '2SS: [NO] CST-IV or [oLB] CST-I/II/V'};
 
 %% 2. Iterate through each EB and create 5000 samples
 NR = 5000; % Number of "samples", our work uses 5000
@@ -76,6 +76,7 @@ for indx = 1:length(length(EB_names))
 end
 
 %% 3. MATCH THE POPULATION TO CLINICAL FREQUENCIES
+load('SSConfig-Analysis_Reference.mat') % Reference Population
 ub = 0.99; % Upper bound of the dominant species
 lb = 0.6; % Lower bound of the dominant species
 NumPats = 1200; % Total size of the simulated populatiion
